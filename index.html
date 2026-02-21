@@ -7,32 +7,38 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#0D1117;color:#E6EDF3;font-family:'Segoe UI',system-ui,sans-serif;overflow:hidden;height:100vh;display:flex;flex-direction:column}
-header{background:#161B22;border-bottom:1px solid #30363D;padding:8px 20px;display:flex;align-items:center;gap:12px;flex-shrink:0;z-index:30}
-.logo{font-size:1.3rem}.title{font-size:1rem;font-weight:700;color:#F0A020;letter-spacing:2px}
+header{background:#161B22;border-bottom:1px solid #30363D;padding:7px 20px;display:flex;align-items:center;gap:12px;flex-shrink:0;z-index:30}
+.logo{font-size:1.3rem}
+.title{font-size:1rem;font-weight:700;color:#F0A020;letter-spacing:2px}
 .badge{margin-left:auto;background:#DC6414;color:white;padding:2px 10px;border-radius:20px;font-size:0.7rem;font-weight:600}
-.hud-bar{display:flex;gap:16px;align-items:center;margin-left:16px}
-.hud-item{display:flex;align-items:center;gap:5px;font-size:0.8rem;color:#8B949E}
-.hud-val{color:#F0A020;font-weight:700;min-width:28px}
-#gameArea{flex:1;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
-#canvas{display:block;image-rendering:pixelated;cursor:crosshair}
-.screen{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(13,17,23,0.96);z-index:20;gap:10px}
+.hud-bar{display:flex;gap:14px;align-items:center;margin-left:14px}
+.hud-item{display:flex;align-items:center;gap:5px;font-size:0.78rem;color:#8B949E}
+.hud-val{color:#F0A020;font-weight:700;min-width:26px}
+#gameArea{flex:1;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#000}
+/* Canvas wird per JS positioniert */
+#canvas{display:block;image-rendering:pixelated;image-rendering:crisp-edges;cursor:crosshair}
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(13,17,23,0.97);z-index:20;gap:10px}
 .screen.hidden{display:none}
 .screen h1{font-size:clamp(1.8rem,5vw,3.5rem);font-weight:900;background:linear-gradient(135deg,#F0A020,#DC6414);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:3px}
-.screen p{color:#8B949E;font-size:0.9rem;text-align:center;max-width:380px;line-height:1.5}
+.screen p{color:#8B949E;font-size:0.9rem;text-align:center;max-width:400px;line-height:1.6}
 .btn{background:linear-gradient(135deg,#DC6414,#F0A020);color:white;border:none;padding:12px 36px;border-radius:8px;font-size:1rem;font-weight:700;cursor:pointer;letter-spacing:1px;transition:transform 0.1s;margin:4px}
 .btn:hover{transform:scale(1.05)}
 .btn.sec{background:#21262D;border:1px solid #30363D;color:#8B949E}
-#cross{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:18px;height:18px;pointer-events:none;z-index:5}
-#cross::before,#cross::after{content:'';position:absolute;background:rgba(255,255,255,0.75)}
-#cross::before{width:2px;height:100%;left:50%;transform:translateX(-50%)}
-#cross::after{height:2px;width:100%;top:50%;transform:translateY(-50%)}
-#minimap{position:absolute;bottom:12px;right:12px;z-index:5;border:1px solid #30363D;border-radius:4px}
-#msg{position:absolute;top:18%;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.8);border:1px solid #DC6414;border-radius:8px;padding:8px 20px;color:#F0A020;font-weight:700;font-size:0.85rem;z-index:10;pointer-events:none;opacity:0;transition:opacity 0.3s;white-space:nowrap}
-#hitflash{position:absolute;inset:0;background:rgba(220,50,20,0);pointer-events:none;z-index:8;transition:background 0.12s}
-.ctrl-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+#cross{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:22px;height:22px;pointer-events:none;z-index:5}
+#cross::before,#cross::after{content:'';position:absolute;background:rgba(255,255,255,0.85);border-radius:1px}
+#cross::before{width:2px;height:100%;left:10px}
+#cross::after{height:2px;width:100%;top:10px}
+#minimap{position:absolute;bottom:14px;right:14px;z-index:5;border:1px solid #444;border-radius:4px}
+#msg{position:absolute;top:15%;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.88);border:1px solid #DC6414;border-radius:8px;padding:8px 22px;color:#F0A020;font-weight:700;font-size:0.85rem;z-index:10;pointer-events:none;opacity:0;transition:opacity 0.3s;white-space:nowrap}
+#hitflash{position:absolute;inset:0;background:rgba(220,50,20,0);pointer-events:none;z-index:8;transition:background 0.1s}
+#debug{position:absolute;top:8px;left:8px;background:rgba(0,0,0,0.75);color:#0f0;font:11px monospace;padding:6px 10px;border-radius:4px;z-index:15;pointer-events:none;display:none;line-height:1.6}
+.ctrl-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
 .ctrl-card{background:#161B22;padding:10px 14px;border-radius:8px;border:1px solid #30363D}
 .ctrl-card kbd{color:#F0A020;font-family:monospace;font-size:0.9rem}
-.ctrl-card span{display:block;color:#8B949E;font-size:0.75rem;margin-top:2px}
+.ctrl-card span{display:block;color:#8B949E;font-size:0.75rem;margin-top:3px}
+.settings-row{display:flex;align-items:center;gap:12px;margin:6px 0;color:#8B949E;font-size:0.85rem}
+.settings-row label{min-width:100px;text-align:right;color:#aaa}
+input[type=range]{accent-color:#DC6414;width:120px}
 </style>
 </head>
 <body>
@@ -43,479 +49,1346 @@ header{background:#161B22;border-bottom:1px solid #30363D;padding:8px 20px;displ
     <div class="hud-item">❤️<span class="hud-val" id="hHP">100</span></div>
     <div class="hud-item">☕<span class="hud-val" id="hAmmo">10</span></div>
     <div class="hud-item">💀<span class="hud-val" id="hKills">0</span></div>
-    <div class="hud-item">📍Level<span class="hud-val" id="hLvl">1</span></div>
+    <div class="hud-item">📍Lvl<span class="hud-val" id="hLvl">1</span></div>
   </div>
-  <span class="badge">v2.0</span>
+  <span class="badge">v2.1</span>
 </header>
+
 <div id="gameArea">
   <canvas id="canvas"></canvas>
   <div id="cross"></div>
   <canvas id="minimap" width="110" height="110"></canvas>
   <div id="hitflash"></div>
   <div id="msg"></div>
+  <div id="debug"></div>
 
+  <!-- MENÜ -->
   <div class="screen" id="sMenu">
     <h1>OFFICE DOOM</h1>
-    <p>Montagmorgen. Kaffeemaschine leer. Kollegen zombifiziert.<br>Du hast noch einen Becher.</p>
+    <p>Montagmorgen. Kaffeemaschine leer.<br>Kollegen zombifiziert. Ein Becher bleibt.</p>
     <button class="btn" onclick="startGame()">☕ SPIELEN</button>
     <button class="btn sec" onclick="showScreen('sCtrl')">⌨️ STEUERUNG</button>
-    <p style="margin-top:12px;font-size:0.72rem;color:#484F58">WASD/Pfeiltasten · SPACE=Angriff · F=Tür · M=Karte</p>
+    <button class="btn sec" onclick="showScreen('sSettings')">⚙️ EINSTELLUNGEN</button>
+    <div id="editorBtn" style="display:none;margin-top:6px">
+      <button class="btn sec" style="background:linear-gradient(135deg,#1a4a1a,#2a6a2a);border:1px solid #3fb950;color:#3fb950" onclick="showScreen('sEditor');initEditor()">🔧 LEVEL-EDITOR</button>
+    </div>
+    <!-- Geheimcode-Eingabe -->
+    <div style="margin-top:14px;display:flex;align-items:center;gap:8px">
+      <input id="codeInput" type="text" maxlength="4" placeholder="🔑 Code" 
+        style="background:#0D1117;color:#F0A020;border:1px solid #30363D;padding:6px 12px;border-radius:6px;font-size:1rem;font-family:monospace;width:90px;letter-spacing:6px;text-align:center"
+        oninput="checkCode(this.value)">
+      <span id="codeHint" style="font-size:0.75rem;color:#484F58"></span>
+    </div>
+    <p style="margin-top:8px;font-size:0.72rem;color:#484F58">WASD · SPACE=Schießen · F=Tür · TAB=Debug</p>
   </div>
+
+  <!-- STEUERUNG -->
   <div class="screen hidden" id="sCtrl">
     <h1 style="font-size:1.8rem">STEUERUNG</h1>
     <div class="ctrl-grid">
       <div class="ctrl-card"><kbd>W A S D</kbd><span>Bewegen</span></div>
       <div class="ctrl-card"><kbd>← →</kbd><span>Drehen</span></div>
-      <div class="ctrl-card"><kbd>SPACE</kbd><span>Kaffee werfen</span></div>
-      <div class="ctrl-card"><kbd>F</kbd><span>Tür öffnen</span></div>
-      <div class="ctrl-card"><kbd>ESC</kbd><span>Pause</span></div>
+      <div class="ctrl-card"><kbd>SPACE / Klick</kbd><span>Kaffee werfen</span></div>
+      <div class="ctrl-card"><kbd>Q / E</kbd><span>Seitwärts (Strafe)</span></div>
+      <div class="ctrl-card"><kbd>F</kbd><span>Tür öffnen/schließen</span></div>
+      <div class="ctrl-card"><kbd>Klick auf Spiel</kbd><span>Maus-Look aktivieren</span></div>
       <div class="ctrl-card"><kbd>M</kbd><span>Minimap</span></div>
+      <div class="ctrl-card"><kbd>TAB</kbd><span>Debug-Overlay</span></div>
     </div>
     <button class="btn" onclick="showScreen('sMenu')">← ZURÜCK</button>
   </div>
+
+  <!-- EINSTELLUNGEN -->
+  <div class="screen hidden" id="sSettings">
+    <h1 style="font-size:1.8rem">EINSTELLUNGEN</h1>
+    <div class="settings-row"><label>FOV</label><input type="range" id="sFov" min="50" max="100" value="60" oninput="setFov(+this.value)"><span id="sFovVal">60°</span></div>
+    <div class="settings-row"><label>Render-Scale</label>
+      <select id="sScale" onchange="setScale(+this.value)" style="background:#21262D;color:#aaa;border:1px solid #30363D;padding:4px 8px;border-radius:6px">
+        <option value="0.5">Low (0.5×)</option>
+        <option value="0.75" selected>Medium (0.75×)</option>
+        <option value="1">High (1×)</option>
+      </select>
+    </div>
+    <div class="settings-row"><label>Lautstärke</label><input type="range" id="sVol" min="0" max="1" step="0.05" value="0.35" oninput="setVol(+this.value)"><span id="sVolVal">35%</span></div>
+    <button class="btn" onclick="showScreen('sMenu')">← ZURÜCK</button>
+  </div>
+
+  <!-- PAUSE -->
   <div class="screen hidden" id="sPause">
     <h1 style="font-size:2rem">PAUSE</h1>
     <button class="btn" onclick="resume()">▶ WEITER</button>
+    <button class="btn sec" onclick="showScreen('sSettings')">⚙️ EINSTELLUNGEN</button>
     <button class="btn sec" onclick="backMenu()">🏠 MENÜ</button>
   </div>
+
+  <!-- TOD -->
   <div class="screen hidden" id="sDead">
-    <h1 style="font-size:2rem">ERWISCHT!</h1>
+    <h1 style="font-size:2rem">ERWISCHT! ☠️</h1>
     <p id="deadMsg">Die Zombies haben deinen Kaffee getrunken...</p>
     <button class="btn" onclick="restartLvl()">↺ NOCHMAL</button>
     <button class="btn sec" onclick="backMenu()">🏠 MENÜ</button>
   </div>
+
+  <!-- LEVEL KLAR -->
   <div class="screen hidden" id="sWin">
     <h1 style="font-size:2rem">LEVEL KLAR! ☕</h1>
-    <p id="winMsg">Alle Zombies besiegt!</p>
+    <p id="winMsg">Alle Zombies neutralisiert!</p>
     <button class="btn" onclick="nextLvl()">▶ WEITER</button>
     <button class="btn sec" onclick="backMenu()">🏠 MENÜ</button>
   </div>
+
+  <!-- STORY-INTRO vor Level -->
+  <div class="screen hidden" id="sStory" style="text-align:center">
+    <p id="storyChapter" style="font-size:0.7rem;color:#DC6414;letter-spacing:3px;margin-bottom:6px;font-family:monospace"></p>
+    <h1 id="storyTitle" style="font-size:clamp(1.4rem,4vw,2.8rem);margin-bottom:16px"></h1>
+    <p id="storyText" style="max-width:500px;font-size:0.9rem;line-height:1.9;color:#bbb;text-align:left;background:rgba(255,255,255,0.03);padding:16px 22px;border-radius:8px;border-left:3px solid #DC6414"></p>
+    <div style="display:flex;align-items:center;gap:10px;margin-top:16px">
+      <div id="storyProgress" style="flex:1;max-width:300px;height:6px;background:#21262D;border-radius:3px;overflow:hidden">
+        <div id="storyProgressBar" style="height:100%;background:linear-gradient(90deg,#DC6414,#F0A020);transition:width 0.4s;width:0%"></div>
+      </div>
+      <span id="storyProgressTxt" style="font-size:0.75rem;color:#8B949E;font-family:monospace"></span>
+    </div>
+    <button class="btn" style="margin-top:12px" onclick="startNextLvl()">☕ LOS GEHT'S!</button>
+    <p style="font-size:0.72rem;color:#484F58;margin-top:8px">LEERTASTE zum Überspringen</p>
+  </div>
+
+  <!-- FINALE mit Geheimcode -->
   <div class="screen hidden" id="sFin">
-    <h1>GEWONNEN! ☕</h1>
-    <p>Du hast alle Zombie-Kollegen besiegt!<br>Das Büro ist gerettet.</p>
+    <h1>DU HAST GEWONNEN! ☕</h1>
+    <p style="font-size:1rem;color:#ccc;max-width:500px;line-height:1.8">
+      Du hast alle 11 Stockwerke überlebt, den Chef-Zombie besiegt<br>
+      und die letzte Tasse Kaffee gerettet.<br><br>
+      <span style="color:#8B949E;font-size:0.85rem">Als Dank hat die Haustechnik dir Zugang zum</span><br>
+      <strong style="color:#F0A020;font-size:1.2rem">🔧 LEVEL-EDITOR 🔧</strong><br>
+      <span style="color:#8B949E;font-size:0.85rem">freigeschaltet. Der Geheimcode lautet:</span><br><br>
+      <span id="secretCode" style="font-size:2.5rem;letter-spacing:12px;color:#DC6414;font-family:monospace;background:rgba(220,100,20,0.15);padding:8px 20px;border-radius:8px;border:1px solid #DC6414">1234</span><br><br>
+      <span style="font-size:0.8rem;color:#484F58">Eingabe im Hauptmenü: ☕ SPIELEN lange drücken</span>
+    </p>
     <button class="btn" onclick="backMenu()">🏠 HAUPTMENÜ</button>
   </div>
+
+  <!-- LEVEL-EDITOR (Geheimcode: 1234) -->
+  <div class="screen hidden" id="sEditor">
+    <div style="display:flex;flex-direction:column;align-items:center;width:100%;height:100%;padding:10px;overflow:auto">
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:8px">
+        <h1 style="font-size:1.5rem">🔧 LEVEL-EDITOR</h1>
+        <button class="btn" style="padding:6px 14px;font-size:0.8rem" onclick="editorPlay()">▶ TESTEN</button>
+        <button class="btn sec" style="padding:6px 14px;font-size:0.8rem" onclick="editorCopy()">📋 KOPIEREN</button>
+        <button class="btn sec" style="padding:6px 14px;font-size:0.8rem" onclick="editorClear()">🗑️ LEEREN</button>
+        <button class="btn sec" style="padding:6px 14px;font-size:0.8rem" onclick="showScreen('sMenu')">✕ SCHLIEßEN</button>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-start">
+        <!-- Tileset -->
+        <div style="background:#161B22;border:1px solid #30363D;border-radius:8px;padding:10px;min-width:140px">
+          <div style="color:#8B949E;font-size:0.72rem;margin-bottom:8px">WERKZEUG</div>
+          <div id="tilePalette"></div>
+          <div style="color:#8B949E;font-size:0.7rem;margin-top:12px">Rechtsklick = Löschen</div>
+          <div style="color:#8B949E;font-size:0.7rem;margin-top:4px">Drag = Zeichnen</div>
+          <hr style="border-color:#30363D;margin:10px 0">
+          <div style="color:#8B949E;font-size:0.72rem;margin-bottom:6px">LEVEL-NAME</div>
+          <input id="edLvlName" value="Mein Level" style="background:#0D1117;color:#aaa;border:1px solid #30363D;padding:4px 8px;border-radius:4px;font-size:0.8rem;width:120px">
+          <hr style="border-color:#30363D;margin:10px 0">
+          <div style="color:#8B949E;font-size:0.72rem;margin-bottom:4px">WANDFARBE RGB</div>
+          <input id="edWR" type="number" value="180" min="0" max="255" style="width:40px;background:#0D1117;color:#aaa;border:1px solid #30363D;padding:2px 4px;border-radius:4px;font-size:0.75rem">
+          <input id="edWG" type="number" value="80"  min="0" max="255" style="width:40px;background:#0D1117;color:#aaa;border:1px solid #30363D;padding:2px 4px;border-radius:4px;font-size:0.75rem">
+          <input id="edWB" type="number" value="20"  min="0" max="255" style="width:40px;background:#0D1117;color:#aaa;border:1px solid #30363D;padding:2px 4px;border-radius:4px;font-size:0.75rem">
+        </div>
+        <!-- Grid -->
+        <canvas id="edCanvas" width="420" height="420" style="border:2px solid #30363D;border-radius:6px;cursor:crosshair;image-rendering:pixelated"></canvas>
+        <!-- Info -->
+        <div style="background:#161B22;border:1px solid #30363D;border-radius:8px;padding:10px;min-width:130px;font-size:0.75rem;color:#8B949E;line-height:1.8">
+          <div style="color:#F0A020;font-weight:700;margin-bottom:6px">TILES</div>
+          <div>⬛ 0 = Leer</div>
+          <div>🟥 1 = Ziegelwand</div>
+          <div>🟦 2 = Glaswand</div>
+          <div>🟫 4 = Tür</div>
+          <div>🟩 9 = Exit</div>
+          <div>🟡 S = Spawn</div>
+          <div>🔴 E = Zombie</div>
+          <div>🟠 B = Boss</div>
+          <div>☕ C = Kaffee-HP</div>
+          <div>📦 A = Ammo</div>
+          <hr style="border-color:#30363D;margin:6px 0">
+          <div id="edInfo" style="color:#aaa;line-height:1.6"></div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+
 <script>
-// ════════════════════════════════════════════════════
-//  OFFICE DOOM – Wolfenstein Raycaster in JS
-// ════════════════════════════════════════════════════
-const cv = document.getElementById('canvas');
-const cx = cv.getContext('2d');
-const mm = document.getElementById('minimap');
-const mx = mm.getContext('2d');
+// ════════════════════════════════════════════════════════════════
+//  OFFICE DOOM v2.1
+//  Verbesserungen: Render-Scale, Float32Array Z-Buffer,
+//  Door-Timer, Audio-Unlock, Debug-Overlay, FOV-Slider,
+//  Headbob, Zombie-Separation, Exit-Glow, Dynamische Trefferzone
+// ════════════════════════════════════════════════════════════════
 
-let W=640,H=400;
-function resize(){
-  const a=document.getElementById('gameArea');
-  const aw=a.clientWidth,ah=a.clientHeight;
-  const r=16/10;
-  if(aw/ah>r){H=ah;W=(ah*r)|0}else{W=aw;H=(aw/r)|0}
-  cv.width=W;cv.height=H;
-  cv.style.width=W+'px';cv.style.height=H+'px';
+// ─── Canvas Setup ──────────────────────────────────────────────
+const cv  = document.getElementById('canvas');
+const ctx = cv.getContext('2d');
+const mm  = document.getElementById('minimap');
+const mmx = mm.getContext('2d');
+
+// Render-Scale: intern rendern, dann hochskaliert anzeigen
+let SCALE = 0.75;       // interner Faktor
+let RW = 480, RH = 300; // interne Auflösung (wird angepasst)
+let DW = 640, DH = 400; // Display-Auflösung
+
+// Offscreen Buffer für internen Render
+let offscreen, octx;
+function createOffscreen(){
+  if(window.OffscreenCanvas){
+    offscreen = new OffscreenCanvas(RW, RH);
+  } else {
+    offscreen = document.createElement('canvas');
+    offscreen.width = RW; offscreen.height = RH;
+  }
+  octx = offscreen.getContext('2d');
 }
-window.addEventListener('resize',resize);resize();
 
-// ─── LEVELS ────────────────────────────────────────
-const MAPS=[
- {name:"Level 1: Montagmorgen",
-  map:[[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,2,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,1,0,0,2,0,0,0,0,0,0,1],[1,0,0,0,0,1,1,1,0,1,0,0,0,0,0,1,1,1,0,1],[1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,1],[1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,1,1,1,1,1,0,1,1,1,1,1,0,1,1,1,1,1,1,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,2,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,1],[1,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]],
-  ps:{x:1.5,y:1.5,a:0},exit:{x:18.5,y:18.5},
-  enemies:[{x:5,y:3,t:0},{x:12,y:4,t:1},{x:8,y:12,t:2},{x:15,y:12,t:0},{x:3,y:16,t:1}],
-  pkups:[{x:9.5,y:5.5,t:'c'},{x:9.5,y:14,t:'c'},{x:3,y:10,t:'a'},{x:15,y:10,t:'a'}],
-  wc:[180,80,20],fc:[30,40,80],cc:[200,200,210]},
+function resize(){
+  const area = document.getElementById('gameArea');
+  const aw = area.clientWidth, ah = area.clientHeight;
+  const ratio = 16/10;
+  if(aw/ah > ratio){ DH = ah; DW = (ah*ratio)|0; }
+  else { DW = aw; DH = (aw/ratio)|0; }
+  cv.width  = DW; cv.height  = DH;
+  cv.style.width  = DW+'px'; cv.style.height = DH+'px';
+  cv.style.position = 'absolute';
+  cv.style.left = ((area.clientWidth -DW)/2)+'px';
+  cv.style.top  = ((area.clientHeight-DH)/2)+'px';
+  RW = Math.max(160,(DW*SCALE)|0);
+  RH = Math.max(100,(DH*SCALE)|0);
+  if(offscreen){ offscreen.width = RW; offscreen.height = RH; }
+}
+window.addEventListener('resize', resize);
+createOffscreen();
+resize();
 
- {name:"Level 2: Das große Meeting",
-  map:[[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,1],[1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1],[1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1],[1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1],[1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1],[1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1],[1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1],[1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,1,1,0,1,1,1,1,0,1,1,0,1,1,1,1,0,1,1,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]],
-  ps:{x:1.5,y:1.5,a:0},exit:{x:18.5,y:18.5},
-  enemies:[{x:6,y:5,t:0},{x:10,y:5,t:1},{x:13,y:5,t:2},{x:6,y:9,t:1},{x:10,y:9,t:0},{x:13,y:9,t:1},{x:3,y:13,t:2},{x:16,y:13,t:0}],
-  pkups:[{x:9.5,y:7,t:'c'},{x:9.5,y:17,t:'c'},{x:1.5,y:12,t:'a'},{x:17.5,y:12,t:'a'}],
-  wc:[40,60,120],fc:[25,35,70],cc:[220,220,230]},
+function setScale(v){ SCALE=v; resize(); }
 
- {name:"Level 3: Überstunden",
-  map:[[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,1],[1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]],
-  ps:{x:1.5,y:1.5,a:0},exit:{x:18.5,y:18.5},
-  enemies:[{x:3,y:3,t:0},{x:7,y:3,t:1},{x:11,y:3,t:2},{x:3,y:7,t:1},{x:7,y:7,t:0},{x:15,y:7,t:1},{x:3,y:11,t:2},{x:11,y:11,t:0},{x:15,y:11,t:2},{x:7,y:15,t:1},{x:11,y:15,t:0},{x:15,y:15,t:1}],
-  pkups:[{x:9.5,y:2,t:'c'},{x:9.5,y:9.5,t:'c'},{x:9.5,y:17,t:'c'},{x:2,y:9,t:'a'},{x:17,y:9,t:'a'}],
-  wc:[80,40,80],fc:[20,20,40],cc:[180,180,200]},
+// ─── Audio ─────────────────────────────────────────────────────
+let audioCtx = null;
+let masterVol = 0.35;
+let audioUnlocked = false;
 
- {name:"Level 4: Der Chef-Zombie",
-  map:[[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1],[1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1],[1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1],[1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1],[1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1],[1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]],
-  ps:{x:1.5,y:1.5,a:0},exit:{x:18.5,y:18.5},
-  enemies:[{x:8,y:5,t:0},{x:10,y:5,t:1},{x:12,y:5,t:2},{x:8,y:10,t:1},{x:12,y:10,t:0},{x:5,y:14,t:2},{x:14,y:14,t:1},{x:10,y:8,t:0,boss:true,hp:6}],
-  pkups:[{x:9.5,y:1.5,t:'c'},{x:9.5,y:17,t:'c'},{x:1.5,y:9,t:'a'},{x:17.5,y:9,t:'a'},{x:9.5,y:13,t:'c'}],
-  wc:[120,20,20],fc:[40,15,15],cc:[200,190,190]},
+function unlockAudio(){
+  if(audioUnlocked) return;
+  audioCtx = new(window.AudioContext||window.webkitAudioContext)();
+  audioUnlocked = true;
+}
+document.addEventListener('click', unlockAudio, {once:true});
+document.addEventListener('keydown', unlockAudio, {once:true});
+
+function playTone(freq, type, dur, vol=masterVol, decay=0.4){
+  if(!audioCtx) return;
+  try{
+    const o=audioCtx.createOscillator(), g=audioCtx.createGain();
+    o.connect(g); g.connect(audioCtx.destination);
+    o.type=type; o.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    o.frequency.exponentialRampToValueAtTime(freq*Math.max(0.01,decay), audioCtx.currentTime+dur);
+    g.gain.setValueAtTime(vol, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime+dur);
+    o.start(); o.stop(audioCtx.currentTime+dur);
+  }catch(e){}
+}
+
+function setVol(v){ masterVol=v; document.getElementById('sVolVal').textContent=Math.round(v*100)+'%'; }
+function setFov(v){
+  FOV = v*(Math.PI/180);
+  document.getElementById('sFovVal').textContent=v+'°';
+}
+
+const sndShoot  = ()=>playTone(320,'sawtooth',0.1,masterVol*0.8,0.25);
+const sndHit    = ()=>playTone(160,'square',0.15,masterVol,0.3);
+const sndPickup = ()=>playTone(660,'sine',0.22,masterVol*0.7,1.6);
+const sndDoor   = ()=>playTone(210,'triangle',0.3,masterVol*0.7,0.6);
+const sndHurt   = ()=>playTone(110,'square',0.28,masterVol,0.2);
+const sndKill   = ()=>{ playTone(80,'sawtooth',0.5,masterVol,0.2); }
+const sndWin    = ()=>{ [440,550,660].forEach((f,i)=>setTimeout(()=>playTone(f,'sine',0.3,masterVol,1.2),i*120)); }
+
+// ─── FOV & Konstanten ──────────────────────────────────────────
+let FOV = Math.PI/3; // 60° default
+const MAXD = 22;
+const TS   = 64;     // Textur-Größe
+
+// ─── LEVELS ────────────────────────────────────────────────────
+// Tile: 0=leer 1=Ziegel 2=Glas 4=Tür 9=Exit-Tür
+// ─── Story-Texte ───────────────────────────────────────────────
+const STORIES = [
+  {ch:"Kapitel 1", t:"Montagmorgen",
+   txt:"07:58 Uhr. Die Kaffeemaschine ist kaputt.\n\nUm genau 08:00 Uhr beginnt das Grauen: Ohne Koffein verwandeln sich deine Kollegen einer nach dem anderen in sabbernde Zombies. Buchhalter Müller frisst seinen Taschenrechner. Die Kollegin aus HR lauert hinter dem Ficus.\n\nDu hattest noch einen letzten Schluck Kaffee. Das rettet dir das Leben – und wird deine einzige Waffe sein."},
+  {ch:"Kapitel 2", t:"Das große Meeting",
+   txt:"'Alle in den Konferenzraum!' Die Kalender-Einladung kam um 09:15 Uhr. Betreff: 'Wichtige strategische Impulse Q4'.\n\nWas als Quartals-Review begann, endete 12 Minuten später in einem Blutbad aus PowerPoint und Gehirnmasse. Folie 3 war über Synergieeffekte. Das war der Moment, in dem auch die letzten Überlebenden aufgaben.\n\nDer Notausgang ist hinter der Klimaanlage. Los."},
+  {ch:"Kapitel 3", t:"Überstunden",
+   txt:"22:30 Uhr. Stockwerk 3. Die Reinigungskraft ist zombifiziert. Der Wischmopp bleibt stehen.\n\nGute Nachricht: Zombies können keine Überstunden in die Zeiterfassung eintragen. Schlechte Nachricht: Du schon. Und Jens aus Controlling hat gesehen, dass du um 22:28 Uhr noch eingeloggt warst.\n\nDer Kaffee reicht für einen letzten Gegenschlag. Nach dir die Sintflut."},
+  {ch:"Kapitel 4", t:"Der Chef-Zombie",
+   txt:"Dr. Klaus Breitenbach. Vorstandsvorsitzender. Jahresgehalt: nicht dein Problem.\n\nBekannt für 3-stündige Monologe über 'Synergieeffekte', 'agile Transformation' und das Warum von Open-Space-Büros. Als Zombie ist er tatsächlich etwas umgänglicher. Nur minimal beißfreudiger als sonst.\n\nEr trägt noch seinen Goldenen Mitarbeiter-des-Jahres-Anstecker von 2019. Man sieht ihn aus 50 Metern."},
+  {ch:"Kapitel 5", t:"Die IT-Abteilung",
+   txt:"Du brauchst Internet, um Hilfe zu rufen. Das WLAN läuft nur, wenn die Server laufen. Die Server laufen nur, wenn jemand in der IT am Arbeiten ist.\n\nDie IT-Abteilung besteht jetzt aus Zombies, die sich auf den Servern sitzend beschäftigen. Genau wie vor der Apokalypse, nur geräuschvoller.\n\nJens hatte mal gesagt: 'Haben Sie es schon mit Neu-Starten versucht?' Diesmal meinst du es sehr wörtlich."},
+  {ch:"Kapitel 6", t:"Die Kantine",
+   txt:"Das heutige Tagesmenü: Hirnsuppe mit Einlage, dazu frisches Grauen an hausgemachtem Elend.\n\nDie Köche haben sich verwandelt – was ehrlich gesagt erklärt, warum der Kaffee schon immer so geschmeckt hat. Der Salat war vermutlich von Anfang an kontaminiert.\n\nNimm dir was. Es ist alles inklusive. Zum Glück hast du deinen Becher noch."},
+  {ch:"Kapitel 7", t:"HR-Hölle",
+   txt:"Personalabteilung: Stockwerk 7.\n\nDer beängstigendste Ort im Büro – noch VOR der Apokalypse. Als Zombies füllen sie weiterhin Formulare aus. Sorgfältig. Mit Stempel.\n\n'Bitte nehmen Sie einen Termin für Ihre Entgehirnung, Formular HR-Z7b, Abschnitt 4.' Die Wartezeit beträgt 6-8 Wochen. Oder du nimmst den Becher."},
+  {ch:"Kapitel 8", t:"Der Serverraum",
+   txt:"-15°C. Glaswände überall. Neonlicht. Ein leises Surren.\n\nDie IT-Zombies haben sich hier verschanzt, weil der Serverraum das Einzige ist, das sie noch kennen: klimatisiert, kein Tageslicht, keine Anrufe vom Helpdesk.\n\nDu auch. Nur dass du einen heißen Kaffee hast. In einem -15°C Raum. Das ändert die Kräfteverhältnisse fundamental."},
+  {ch:"Kapitel 9", t:"Das Dach",
+   txt:"Endlich frische Luft!\n\nAußer dass da oben die Raucher-Zombies warten. Menschen, die auch vor der Apokalypse schon so ausgesehen haben. Der Hubschrauber kommt laut Funkgerät in 12 Minuten.\n\nDu hast Kaffee für 10 Würfe. Das reicht für 10 Zombies, sofern du nicht daneben wirfst. Du wirst daneben werfen."},
+  {ch:"Kapitel 10", t:"Der Vorstand",
+   txt:"Elftes Stockwerk. Echtholz. Designermöbel. Mineralwasser für 8€ die Flasche.\n\nDie Vorstands-Zombies tragen Maßanzüge und beißen trotzdem. Der Unterschied zur Realität ist rein akademischer Natur.\n\nEin Überlebender hat an die Wand geschrieben: 'Sie hören nicht auf, Meetings einzuladen.' Mit seinem eigenen Blut. Das Tragischste, was du je gesehen hast."},
+  {ch:"FINALE", t:"Die Abschlusspräsentation",
+   txt:"Das Penthouse-Büro. Letztes Stockwerk. Echtleder-Sofa. Panoramafenster.\n\nUnd mitten drin: GERALD. Senior Agile Coach. Zertifizierter Scrum Master. Zombie. Er hat eine laminierte Folie mit dem Titel 'Road to Braaains 2026 – eine Customer-Journey'.\n\nBeende die Präsentation. Für immer. Du weißt, was zu tun ist. Der Becher ist noch warm."},
 ];
 
-// ─── State ────────────────────────────────────────
-let gs='menu',lvlIdx=0,player,enemies,pickups,map,ld;
-let keys={},lastT=0,raf=null,kills=0,showMM=true;
-let wFrame=3,wAnim=false,wTimer=0;
-let projectiles=[];
+const MAPS = [
+  { name:"Level 1: Montagmorgen",
+    map:[
+      [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+      [1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,2,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,1,0,0,2,0,0,0,0,0,0,1],
+      [1,0,0,0,0,1,1,1,0,1,0,0,0,0,0,1,1,1,0,1],
+      [1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,1],
+      [1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,1,1,1,1,1,0,1,1,1,1,1,0,1,1,1,1,1,1,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,2,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,1],
+      [1,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,9,0,1],
+      [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    ],
+    ps:{x:1.5,y:1.5,a:0}, exit:{x:17.5,y:18.5},
+    enemies:[{x:5,y:3,t:0},{x:12,y:4,t:1},{x:8,y:12,t:2},{x:15,y:12,t:0},{x:3,y:16,t:1}],
+    pkups:[{x:9.5,y:5.5,t:'c'},{x:9.5,y:14,t:'c'},{x:3,y:10,t:'a'},{x:15,y:10,t:'a'}],
+    wc:[180,80,20], fc:[30,40,80], cc:[200,200,210] },
 
-// ─── Textur-Generator ──────────────────────────────
-const TS=64;
-const tex={};
-function mkTex(fn){const c=document.createElement('canvas');c.width=c.height=TS;fn(c.getContext('2d'),TS);return c;}
+  { name:"Level 2: Das große Meeting",
+    map:[
+      [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,1],
+      [1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1],
+      [1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1],
+      [1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1],
+      [1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1],
+      [1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1],
+      [1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1],
+      [1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,1,1,0,1,1,1,1,0,1,1,0,1,1,1,1,0,1,1,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,9,0,1],
+      [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    ],
+    ps:{x:1.5,y:1.5,a:0}, exit:{x:17.5,y:18.5},
+    enemies:[{x:6,y:5,t:0},{x:10,y:5,t:1},{x:13,y:5,t:2},{x:6,y:9,t:1},{x:10,y:9,t:0},{x:13,y:9,t:1},{x:3,y:13,t:2},{x:16,y:13,t:0}],
+    pkups:[{x:9.5,y:7,t:'c'},{x:9.5,y:17,t:'c'},{x:1.5,y:12,t:'a'},{x:17.5,y:12,t:'a'}],
+    wc:[40,60,120], fc:[25,35,70], cc:[220,220,230] },
+
+  { name:"Level 3: Überstunden",
+    map:[
+      [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+      [1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,1],
+      [1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,9,0,1],
+      [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    ],
+    ps:{x:1.5,y:1.5,a:0}, exit:{x:17.5,y:18.5},
+    enemies:[{x:3,y:3,t:0},{x:7,y:3,t:1},{x:11,y:3,t:2},{x:3,y:7,t:1},{x:7,y:7,t:0},{x:15,y:7,t:1},{x:3,y:11,t:2},{x:11,y:11,t:0},{x:15,y:11,t:2},{x:7,y:15,t:1},{x:11,y:15,t:0},{x:15,y:15,t:1}],
+    pkups:[{x:9.5,y:2,t:'c'},{x:9.5,y:9.5,t:'c'},{x:9.5,y:17,t:'c'},{x:2,y:9,t:'a'},{x:17,y:9,t:'a'}],
+    wc:[80,40,80], fc:[20,20,40], cc:[180,180,200] },
+
+  { name:"Level 4: Der Chef-Zombie",
+    map:[
+      [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1],
+      [1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1],
+      [1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1],
+      [1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1],
+      [1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1],
+      [1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,9,0,1],
+      [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    ],
+    ps:{x:1.5,y:1.5,a:0}, exit:{x:17.5,y:18.5},
+    enemies:[{x:8,y:5,t:0},{x:10,y:5,t:1},{x:12,y:5,t:2},{x:8,y:10,t:1},{x:12,y:10,t:0},{x:5,y:14,t:2},{x:14,y:14,t:1},{x:10,y:8,t:0,boss:true,hp:6}],
+    pkups:[{x:9.5,y:1.5,t:'c'},{x:9.5,y:17,t:'c'},{x:1.5,y:9,t:'a'},{x:17.5,y:9,t:'a'},{x:9.5,y:13,t:'c'}],
+    wc:[120,20,20], fc:[40,15,15], cc:[200,190,190] },
+  // ── LEVEL 5: IT-Abteilung ──────────────────────────────────
+  { name:"Level 5: Die IT-Abteilung",
+    map:[
+      [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,2,2,2,0,0,0,0,0,0,0,0,0,0,2,2,2,0,1],
+      [1,0,2,0,2,0,0,0,1,1,1,1,1,0,0,2,0,2,0,1],
+      [1,0,2,0,2,0,0,0,1,0,0,0,1,0,0,2,0,2,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1],
+      [1,1,1,4,1,1,1,1,1,0,1,1,1,1,1,1,4,1,1,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,1],
+      [1,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,1],
+      [1,0,2,0,0,0,1,1,1,4,1,1,1,0,0,0,0,2,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,1],
+      [1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,9,0,1],
+      [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    ],
+    ps:{x:1.5,y:1.5,a:0}, exit:{x:17.5,y:18.5},
+    enemies:[{x:3,y:4,t:0},{x:5,y:6,t:1},{x:10,y:4,t:2},{x:14,y:4,t:0},{x:9,y:9,t:1},{x:3,y:12,t:2},{x:15,y:12,t:0},{x:9,y:15,t:1}],
+    pkups:[{x:9.5,y:1.5,t:'a'},{x:1.5,y:10,t:'c'},{x:17.5,y:10,t:'c'},{x:9.5,y:13,t:'a'}],
+    wc:[20,60,120], fc:[20,25,50], cc:[180,200,230] },
+
+  // ── LEVEL 6: Die Kantine ──────────────────────────────────
+  { name:"Level 6: Die Kantine",
+    map:[
+      [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,0,1],
+      [1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1],
+      [1,0,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,1,1,1,4,1,1,1,1,1,1,1,1,1,1,4,1,1,1,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,2,0,2,0,0,0,0,0,0,0,0,0,2,0,2,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,9,0,1],
+      [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    ],
+    ps:{x:1.5,y:1.5,a:0}, exit:{x:17.5,y:18.5},
+    enemies:[{x:4,y:3,t:0},{x:9,y:2,t:1},{x:15,y:3,t:2},{x:4,y:5,t:1},{x:14,y:5,t:0},{x:9,y:11,t:2},{x:3,y:10,t:0},{x:16,y:10,t:1},{x:9,y:16,t:2},{x:4,y:16,t:0}],
+    pkups:[{x:9.5,y:7,t:'c'},{x:9.5,y:11.5,t:'c'},{x:2,y:14,t:'a'},{x:17,y:14,t:'a'},{x:9.5,y:17,t:'c'}],
+    wc:[160,100,20], fc:[50,35,20], cc:[210,190,170] },
+
+  // ── LEVEL 7: HR-Hölle ──────────────────────────────────────
+  { name:"Level 7: HR-Hölle",
+    map:[
+      [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+      [1,0,0,1,0,0,0,1,0,0,0,0,1,0,0,0,1,0,0,1],
+      [1,0,0,4,0,0,0,4,0,0,0,0,4,0,0,0,4,0,0,1],
+      [1,0,0,1,0,0,0,1,0,0,0,0,1,0,0,0,1,0,0,1],
+      [1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1],
+      [1,0,0,1,0,0,0,1,0,0,0,0,1,0,0,0,1,0,0,1],
+      [1,0,0,4,0,0,0,4,0,0,0,0,4,0,0,0,4,0,0,1],
+      [1,0,0,1,0,0,0,1,0,0,0,0,1,0,0,0,1,0,0,1],
+      [1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1],
+      [1,0,0,1,0,0,0,1,0,0,0,0,1,0,0,0,1,0,0,1],
+      [1,0,0,4,0,0,0,4,0,0,0,0,4,0,0,0,4,0,0,1],
+      [1,0,0,1,0,0,0,1,0,0,0,0,1,0,0,0,1,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,9,0,1],
+      [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    ],
+    ps:{x:1.5,y:5.5,a:0}, exit:{x:17.5,y:18.5},
+    enemies:[{x:1.5,y:1.5,t:0},{x:6,y:1.5,t:1},{x:10,y:1.5,t:2},{x:14,y:1.5,t:0},{x:1.5,y:8,t:1},{x:10,y:8,t:2},{x:14,y:8,t:0},{x:1.5,y:15,t:1},{x:6,y:15,t:2},{x:14,y:15,t:0},{x:10,y:17,t:1},{x:1.5,y:12.5,t:2}],
+    pkups:[{x:9.5,y:5.5,t:'c'},{x:9.5,y:12.5,t:'c'},{x:9.5,y:1.5,t:'a'},{x:17.5,y:5.5,t:'a'},{x:9.5,y:17,t:'c'}],
+    wc:[100,20,100], fc:[30,15,30], cc:[190,170,190] },
+
+  // ── LEVEL 8: Der Serverraum ────────────────────────────────
+  { name:"Level 8: Der Serverraum",
+    map:[
+      [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,2,2,2,2,0,0,0,0,0,0,0,2,2,2,2,0,0,1],
+      [1,0,2,0,0,2,0,0,0,0,0,0,0,2,0,0,2,0,0,1],
+      [1,0,2,0,0,2,0,0,0,0,0,0,0,2,0,0,2,0,0,1],
+      [1,0,2,0,0,2,0,0,0,0,0,0,0,2,0,0,2,0,0,1],
+      [1,0,2,2,2,2,0,0,0,0,0,0,0,2,2,2,2,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,1,1,1,4,1,1,1,0,0,0,1,1,1,4,1,1,1,1,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,2,2,0,0,2,2,0,0,0,2,2,0,0,2,2,0,0,1],
+      [1,0,2,2,0,0,2,2,0,0,0,2,2,0,0,2,2,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,2,2,0,0,2,2,0,0,0,2,2,0,0,2,2,0,0,1],
+      [1,0,2,2,0,0,2,2,0,0,0,2,2,0,0,2,2,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,9,0,1],
+      [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    ],
+    ps:{x:1.5,y:1.5,a:0}, exit:{x:17.5,y:18.5},
+    enemies:[{x:3.5,y:4,t:0},{x:15,y:4,t:1},{x:9.5,y:3,t:2},{x:3,y:10.5,t:0},{x:6.5,y:10.5,t:1},{x:12,y:10.5,t:2},{x:15.5,y:10.5,t:0},{x:3,y:14.5,t:1},{x:15.5,y:14.5,t:2},{x:9.5,y:16,t:0}],
+    pkups:[{x:9.5,y:1.5,t:'a'},{x:9.5,y:9,t:'c'},{x:1.5,y:12,t:'c'},{x:17.5,y:12,t:'a'},{x:9.5,y:16,t:'c'}],
+    wc:[20,80,180], fc:[15,20,45], cc:[170,195,230] },
+
+  // ── LEVEL 9: Das Dach ─────────────────────────────────────
+  { name:"Level 9: Das Dach",
+    map:[
+      [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,1,1,0,0,0,0,0,0,0,0,0,1,1,0,0,0,1],
+      [1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1],
+      [1,0,0,1,1,0,0,0,0,0,0,0,0,0,1,1,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,9,0,1],
+      [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    ],
+    ps:{x:1.5,y:1.5,a:0}, exit:{x:17.5,y:18.5},
+    enemies:[{x:9.5,y:9.5,t:0,boss:true,hp:4},{x:5,y:2,t:1},{x:14,y:2,t:2},{x:5,y:17,t:0},{x:14,y:17,t:1},{x:2,y:9,t:2},{x:17,y:9,t:0},{x:4,y:13,t:1},{x:15,y:13,t:2},{x:9.5,y:5,t:0},{x:9.5,y:14,t:1}],
+    pkups:[{x:9.5,y:1.5,t:'c'},{x:1.5,y:9.5,t:'a'},{x:17.5,y:9.5,t:'a'},{x:9.5,y:17,t:'c'},{x:4,y:5,t:'c'},{x:14,y:5,t:'c'}],
+    wc:[70,110,70], fc:[40,65,40], cc:[160,220,160] },
+
+  // ── LEVEL 10: Der Vorstand ────────────────────────────────
+  { name:"Level 10: Der Vorstand",
+    map:[
+      [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+      [1,0,0,0,0,2,0,0,0,0,0,0,0,0,2,0,0,0,0,1],
+      [1,0,0,0,0,2,0,0,0,0,0,0,0,0,2,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,2,2,0,2,2,1,1,1,1,1,1,1,1,2,2,0,2,2,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,1],
+      [1,2,2,0,2,2,1,1,1,1,1,1,1,1,2,2,0,2,2,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,2,0,0,0,0,0,0,0,0,2,0,0,0,0,1],
+      [1,0,0,0,0,2,0,0,0,0,0,0,0,0,2,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,9,0,1],
+      [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    ],
+    ps:{x:1.5,y:1.5,a:0}, exit:{x:17.5,y:18.5},
+    enemies:[{x:3,y:2,t:0},{x:9.5,y:2,t:1},{x:16,y:2,t:2},{x:3,y:7,t:1},{x:9.5,y:9.5,t:0},{x:16,y:7,t:0},{x:3,y:11,t:2},{x:16,y:11,t:1},{x:3,y:16,t:0},{x:9.5,y:16,t:2},{x:16,y:16,t:1},{x:9.5,y:5,t:0,boss:true,hp:5},{x:9.5,y:14,t:1}],
+    pkups:[{x:9.5,y:1.5,t:'c'},{x:1.5,y:9.5,t:'c'},{x:17.5,y:9.5,t:'a'},{x:9.5,y:17,t:'c'},{x:1.5,y:17,t:'a'},{x:17.5,y:1.5,t:'a'}],
+    wc:[140,110,30], fc:[45,38,10], cc:[215,210,185] },
+
+  // ── LEVEL 11: Die Abschlusspräsentation (FINALE) ──────────
+  { name:"Level 11: Die Abschlusspräsentation",
+    map:[
+      [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,2,2,2,2,2,2,2,2,2,2,2,2,2,2,0,0,1],
+      [1,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,1],
+      [1,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,1],
+      [1,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,1],
+      [1,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,1],
+      [1,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,1],
+      [1,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,1],
+      [1,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,1],
+      [1,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,1],
+      [1,0,0,2,2,2,2,2,2,2,2,2,2,2,2,2,2,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,9,0,1],
+      [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    ],
+    ps:{x:1.5,y:1.5,a:0}, exit:{x:17.5,y:18.5},
+    enemies:[
+      {x:9.5,y:7.5,t:0,boss:true,hp:8},  // GERALD der Endgegner
+      {x:5,y:5,t:0},{x:14,y:5,t:1},{x:5,y:10,t:2},{x:14,y:10,t:0},
+      {x:3,y:1.5,t:1},{x:9.5,y:1.5,t:2},{x:16,y:1.5,t:0},
+      {x:2,y:14,t:1},{x:9.5,y:14,t:2},{x:17,y:14,t:0},
+      {x:4,y:16,t:1},{x:9.5,y:16.5,t:2},{x:15,y:16,t:0},
+    ],
+    pkups:[{x:9.5,y:1.5,t:'c'},{x:1.5,y:7.5,t:'c'},{x:17.5,y:7.5,t:'c'},{x:9.5,y:13,t:'a'},{x:1.5,y:17,t:'a'},{x:17.5,y:17,t:'a'},{x:9.5,y:17,t:'c'}],
+    wc:[150,10,10], fc:[50,10,10], cc:[210,180,180] },
+];
+
+// ─── Game State ────────────────────────────────────────────────
+let gs='menu', lvlIdx=0, player, enemies, pickups, map, ld, doors;
+let keys={}, lastT=0, raf=null, kills=0, showMM=true, showDebug=false;
+let wAnimT=0;
+let projectiles=[];
+let particles=[];
+let bobT=0, bobY=0;
+// Debug-Metriken
+let fps=0, frameCount=0, fpsTimer=0, spritesDrawn=0, raysHit=0;
+
+// ─── Texturen (Pre-Render auf OffscreenCanvas) ─────────────────
+const TS2 = TS; // Alias
+const tex = {};
+
+function mkTex(fn){
+  const c = document.createElement('canvas');
+  c.width = c.height = TS;
+  fn(c.getContext('2d'), TS);
+  return c;
+}
 
 function initTex(){
-  // Ziegelwand
-  tex.w1=mkTex((t,S)=>{
-    t.fillStyle='#b04010';t.fillRect(0,0,S,S);
-    for(let r=0;r<S/12;r++){const off=(r%2)*14;for(let c=-1;c<S/28+1;c++){const x=c*28+off,y=r*12,sh=Math.random()*30-15;const rv=Math.min(255,(180+sh)|0),gv=Math.max(0,(70+sh)|0);t.fillStyle=`rgb(${rv},${gv},20)`;t.fillRect(x+1,y+1,26,10);t.fillStyle='rgba(0,0,0,0.3)';t.fillRect(x,y,27,1);t.fillRect(x,y,1,11);}}
+  // Ziegelwand orange
+  tex.w1 = mkTex((t,S)=>{
+    t.fillStyle='#a83c10'; t.fillRect(0,0,S,S);
+    for(let r=0;r<S/12;r++){
+      const off=(r%2)*14;
+      for(let c=-1;c<S/28+1;c++){
+        const x=c*28+off, y=r*12;
+        const sh = (Math.sin(x*0.3+y*0.7)*12);
+        t.fillStyle=`rgb(${Math.min(255,(172+sh)|0)},${Math.max(0,(62+sh)|0)},16)`;
+        t.fillRect(x+1,y+1,26,10);
+        t.fillStyle='rgba(0,0,0,0.38)'; t.fillRect(x,y,27,1); t.fillRect(x,y,1,11);
+      }
+    }
+    // Mauerwerk-Highlight
+    t.fillStyle='rgba(255,160,80,0.07)';
+    t.fillRect(0,0,S,S/2);
   });
-  // Glaswand
-  tex.w2=mkTex((t,S)=>{
-    t.fillStyle='#1a3a6a';t.fillRect(0,0,S,S);
-    t.fillStyle='#333';[0,S-3].forEach(y=>t.fillRect(0,y,S,3));[0,S-3].forEach(x=>t.fillRect(x,0,3,S));t.fillRect(S/2-1,0,2,S);
-    t.fillStyle='rgba(100,180,255,0.12)';t.beginPath();t.moveTo(8,4);t.lineTo(S-4,S/2);t.lineTo(S-4,4);t.fill();
+  // Glaswand blau
+  tex.w2 = mkTex((t,S)=>{
+    t.fillStyle='#162a52'; t.fillRect(0,0,S,S);
+    t.fillStyle='#222'; [0,S-3].forEach(y=>t.fillRect(0,y,S,3)); [0,S-3].forEach(x=>t.fillRect(x,0,3,S));
+    t.fillRect(S/2-1,0,2,S);
+    t.fillStyle='rgba(80,160,255,0.16)'; t.beginPath(); t.moveTo(6,4); t.lineTo(S-4,S*0.55); t.lineTo(S-4,4); t.fill();
+    t.fillStyle='rgba(255,255,255,0.05)'; t.fillRect(S*0.1,4,S*0.18,S-8);
   });
-  // Tür
-  tex.door=mkTex((t,S)=>{
-    t.fillStyle='#8B5E3C';t.fillRect(0,0,S,S);t.fillStyle='#6B4E37';t.fillRect(3,3,S-6,S-6);
-    for(let i=0;i<8;i++){t.fillStyle=`rgba(0,0,0,0.07)`;t.fillRect(3,3+i*7,S-6,2);}
-    t.fillStyle='#aaa';t.beginPath();t.arc(S-12,S/2,4,0,Math.PI*2);t.fill();
+  // Normale Tür
+  tex.door = mkTex((t,S)=>{
+    t.fillStyle='#7a5230'; t.fillRect(0,0,S,S);
+    t.fillStyle='#5e3e26'; t.fillRect(4,4,S-8,S-8);
+    for(let i=0;i<7;i++){ t.fillStyle='rgba(0,0,0,0.08)'; t.fillRect(4,4+i*8,S-8,2); }
+    // Holzmaserung
+    for(let i=0;i<4;i++){ t.fillStyle=`rgba(${100+i*8},${60+i*5},30,0.12)`; t.fillRect(4+i*14,4,10,S-8); }
+    t.fillStyle='#bbb'; t.beginPath(); t.arc(S-14,S/2,5,0,Math.PI*2); t.fill();
+    t.fillStyle='#999'; t.beginPath(); t.arc(S-14,S/2,3,0,Math.PI*2); t.fill();
+  });
+  // Exit-Tür (grün)
+  tex.exit = mkTex((t,S)=>{
+    t.fillStyle='#0f3318'; t.fillRect(0,0,S,S);
+    t.fillStyle='#185a28'; t.fillRect(4,4,S-8,S-8);
+    for(let i=0;i<7;i++){ t.fillStyle='rgba(0,0,0,0.06)'; t.fillRect(4,4+i*8,S-8,2); }
+    // Puls-Glanz (statisch)
+    t.fillStyle='rgba(0,220,80,0.18)'; t.fillRect(4,4,S-8,(S-8)/2);
+    // EXIT-Text
+    t.fillStyle='rgba(0,255,80,0.92)'; t.font='bold 12px sans-serif'; t.textAlign='center'; t.textBaseline='middle';
+    t.fillText('EXIT',S/2,S/2-6);
+    // Pfeil
+    t.fillStyle='rgba(0,255,80,0.8)'; t.beginPath();
+    t.moveTo(S/2-6,S/2+6); t.lineTo(S/2+6,S/2+6); t.lineTo(S/2,S/2+14); t.fill();
   });
 }
 
-// ─── Sprite-Generator ─────────────────────────────
-let sprs=[],sprBoss,sprCoffee,sprAmmo,sprWeapon=[];
+// ─── Sprites ───────────────────────────────────────────────────
+let sprs=[], sprBoss, sprCoffee, sprAmmo;
 
 function mkEnemy(opts){
   return mkTex((t,S)=>{
     t.clearRect(0,0,S,S);
     const cx=S/2;
-    // Beine
-    t.fillStyle=opts.skirt?'#1a237e':'#1a237e';
-    if(opts.skirt){t.fillRect(cx-10,S*.52,20,12);}
-    else{t.fillRect(cx-8,S*.52,7,14);t.fillRect(cx+1,S*.52,7,14);}
-    // Körper
-    t.fillStyle=opts.shirt||'#ddd';t.fillRect(cx-10,S*.35,20,opts.boss?22:17);
+    // Beine / Rock
+    if(opts.skirt){
+      t.fillStyle='#283593'; t.fillRect(cx-11,S*.52,22,13);
+      t.fillStyle='#1a237e'; t.fillRect(cx-9,S*.62,18,4);
+    } else {
+      t.fillStyle='#1a237e'; t.fillRect(cx-8,S*.52,7,15); t.fillRect(cx+1,S*.52,7,15);
+    }
+    // Schuhe
+    t.fillStyle='#111'; t.fillRect(cx-10,S*.64,9,4); t.fillRect(cx+1,S*.64,9,4);
+    // Körper/Hemd
+    t.fillStyle=opts.shirt||'#d8e4f0'; t.fillRect(cx-11,S*.35,22,opts.boss?24:18);
     // Krawatte
-    if(opts.tie){t.fillStyle=opts.tie;t.fillRect(cx-2,S*.36,4,14);}
+    if(opts.tie){ t.fillStyle=opts.tie; t.fillRect(cx-2,S*.36,4,15); }
     // Kopf
-    t.fillStyle='#9ecf60';t.beginPath();t.arc(cx,S*.27,opts.boss?11:9,0,Math.PI*2);t.fill();
-    t.fillStyle='#8bbf50';t.beginPath();t.arc(cx,S*.27,opts.boss?9:7,0,Math.PI*2);t.fill();
+    t.fillStyle='#9ecf60'; t.beginPath(); t.arc(cx,S*.27,opts.boss?12:9.5,0,Math.PI*2); t.fill();
+    t.fillStyle='#7aaf40'; t.beginPath(); t.arc(cx+2,S*.29,opts.boss?8:6,0,Math.PI*2); t.fill();
     // Augen
-    t.fillStyle='white';t.beginPath();t.ellipse(cx-3.5,S*.26,3,2.5,0,0,Math.PI*2);t.fill();t.beginPath();t.ellipse(cx+3.5,S*.26,3,2.5,0,0,Math.PI*2);t.fill();
+    t.fillStyle='white';
+    t.beginPath(); t.ellipse(cx-4,S*.255,3.5,3,0,0,Math.PI*2); t.fill();
+    t.beginPath(); t.ellipse(cx+4,S*.255,3.5,3,0,0,Math.PI*2); t.fill();
+    // Pupillen
+    t.fillStyle='rgba(220,0,0,0.4)';
+    t.beginPath(); t.ellipse(cx-4,S*.26,1.5,1.5,0,0,Math.PI*2); t.fill();
+    t.beginPath(); t.ellipse(cx+4,S*.26,1.5,1.5,0,0,Math.PI*2); t.fill();
     // Mund
-    t.fillStyle='#800';t.beginPath();t.arc(cx,S*.31,3,0,Math.PI);t.fill();
-    // Arme
-    t.fillStyle='#9ecf60';t.fillRect(cx-17,S*.37,7,4);t.fillRect(cx+10,S*.37,7,4);
+    t.fillStyle='#700'; t.beginPath(); t.arc(cx,S*.315,4,0,Math.PI); t.fill();
+    // Arme ausgestreckt
+    t.fillStyle='#9ecf60'; t.fillRect(cx-20,S*.36,9,4); t.fillRect(cx+11,S*.36,9,4);
     // Boss-Krone
-    if(opts.boss){t.fillStyle='#FFD700';[cx-7,cx-2,cx+4].forEach((bx,i)=>t.fillRect(bx,S*.14+(i===1?-2:0),4,i===1?8:6));t.fillRect(cx-7,S*.22,14+1,3);}
+    if(opts.boss){
+      t.fillStyle='#FFD700';
+      t.fillRect(cx-9,S*.15,4,8); t.fillRect(cx-2,S*.12,4,11); t.fillRect(cx+5,S*.15,4,8);
+      t.fillRect(cx-9,S*.23,18,3);
+    }
   });
 }
 
 function initSprites(){
-  sprs=[
-    mkEnemy({shirt:'#e0e8f0',tie:'#c00000'}),
-    mkEnemy({shirt:'#e8f0e0',tie:'#006600'}),
-    mkEnemy({shirt:'#f0f0ff',skirt:true}),
+  sprs = [
+    mkEnemy({shirt:'#dce8f8',tie:'#cc0000'}),
+    mkEnemy({shirt:'#dcf8dc',tie:'#005500'}),
+    mkEnemy({shirt:'#f8f8ff',skirt:true}),
   ];
-  sprBoss=mkEnemy({shirt:'#222',tie:'#FFD700',boss:true});
-  sprCoffee=mkTex((t,S)=>{t.clearRect(0,0,S,S);const cx=S/2,cy=S/2;t.fillStyle='#e8e8e8';t.fillRect(cx-8,cy-12,16,20);t.fillStyle='#2d0f00';t.fillRect(cx-7,cy-10,14,10);t.strokeStyle='#ccc';t.lineWidth=2;t.beginPath();t.arc(cx+9,cy-4,5,-Math.PI/2,Math.PI/2);t.stroke();t.fillStyle='#0a0';t.font='bold 9px sans-serif';t.textAlign='center';t.fillText('+HP',cx,cy+14);});
-  sprAmmo=mkTex((t,S)=>{t.clearRect(0,0,S,S);const cx=S/2,cy=S/2;t.fillStyle='#DC6414';t.fillRect(cx-12,cy-8,24,16);t.fillStyle='#fff';t.font='bold 9px sans-serif';t.textAlign='center';t.fillText('AMMO',cx,cy+4);});
-  // Weapon wird direkt gezeichnet (keine pre-cached Sprites mehr)
-  sprWeapon=null;
+  sprBoss = mkEnemy({shirt:'#111',tie:'#FFD700',boss:true});
+
+  sprCoffee = mkTex((t,S)=>{
+    t.clearRect(0,0,S,S);
+    const cx=S/2, cy=S/2;
+    t.fillStyle='#eaeaea'; t.fillRect(cx-9,cy-15,18,24);
+    t.fillStyle='#2a0d00'; t.fillRect(cx-8,cy-13,16,13);
+    t.strokeStyle='#c8c8c8'; t.lineWidth=2.5;
+    t.beginPath(); t.arc(cx+11,cy-4,7,-Math.PI/2,Math.PI/2); t.stroke();
+    t.fillStyle='#00cc55'; t.font='bold 10px sans-serif'; t.textAlign='center';
+    t.fillText('+HP',cx,cy+14);
+  });
+
+  sprAmmo = mkTex((t,S)=>{
+    t.clearRect(0,0,S,S);
+    const cx=S/2, cy=S/2;
+    t.fillStyle='#bb4400'; t.fillRect(cx-13,cy-10,26,20);
+    t.fillStyle='#ff7700'; t.fillRect(cx-12,cy-9,24,4);
+    t.fillStyle='#fff'; t.font='bold 9px sans-serif'; t.textAlign='center';
+    t.fillText('AMMO',cx,cy+5);
+  });
 }
 
-// ─── Raycaster ────────────────────────────────────
-const FOV=Math.PI/3,MAXD=20;
+// ─── Doors System (Timer-basiert) ──────────────────────────────
+// doors = Map: "r,c" → {state:'closed'/'opening'/'open'/'closing', t:0..1}
+const DOOR_SPEED = 2.5; // Öffnungsgeschwindigkeit
+let doorStates = {};
 
+function initDoors(){
+  doorStates = {};
+  for(let r=0;r<map.length;r++)
+    for(let c=0;c<map[r].length;c++)
+      if(map[r][c]===4) doorStates[`${r},${c}`]={state:'closed',t:0};
+}
+
+function updateDoors(dt){
+  for(const key in doorStates){
+    const d = doorStates[key];
+    if(d.state==='opening'){ d.t=Math.min(1,d.t+dt*DOOR_SPEED); if(d.t>=1)d.state='open'; }
+    else if(d.state==='closing'){ d.t=Math.max(0,d.t-dt*DOOR_SPEED); if(d.t<=0)d.state='closed'; }
+  }
+}
+
+function getDoorOffset(r,c){
+  const d = doorStates[`${r},${c}`];
+  return d ? d.t : 0; // 0=geschlossen, 1=offen
+}
+
+// ─── Raycaster ─────────────────────────────────────────────────
 function castRay(px,py,ang){
-  const cos=Math.cos(ang),sin=Math.sin(ang);
-  for(let s=1;s<MAXD*60;s++){
-    const d=s*.02,wx=px+cos*d,wy=py+sin*d;
-    const mx2=wx|0,my2=wy|0;
-    if(my2<0||my2>=map.length||mx2<0||mx2>=map[0].length)return{d:MAXD,cell:0,side:'EW',wx:0};
-    const cell=map[my2][mx2];
+  const cosA=Math.cos(ang), sinA=Math.sin(ang);
+  let raysHitLocal=0;
+  for(let s=1;s<MAXD*64;s++){
+    const d=s*0.016, wx=px+cosA*d, wy=py+sinA*d;
+    const ix=wx|0, iy=wy|0;
+    if(iy<0||iy>=map.length||ix<0||ix>=map[0].length)
+      return{d:MAXD,cell:0,side:'EW',wallX:0};
+    const cell=map[iy][ix];
     if(cell>0){
-      const side=Math.abs(sin)>Math.abs(cos)?'NS':'EW';
-      const wallX=side==='NS'?wx-(wx|0):wy-(wy|0);
+      const side=Math.abs(sinA)>Math.abs(cosA)?'NS':'EW';
+      let wallX=side==='NS'?wx-(wx|0):wy-(wy|0);
+      // Tür-Offset anwenden
+      if(cell===4){
+        const dOff=getDoorOffset(iy,ix);
+        if(dOff>=1) continue; // Tür komplett offen → ignorieren
+        wallX=(wallX+dOff)%1;
+        if(wallX<0)wallX+=1;
+      }
       return{d,cell,side,wallX};
     }
   }
   return{d:MAXD,cell:0,side:'EW',wallX:0};
 }
 
+// ─── Render Scene (auf Offscreen-Buffer) ───────────────────────
 function renderScene(){
-  const NR=W;const hFov=FOV/2;
-  const[fr,fg,fb]=ld.fc;const[cr,cg,cb]=ld.cc;
-  // Sky/Floor
-  const sg=cx.createLinearGradient(0,0,0,H/2);sg.addColorStop(0,`rgb(${cr},${cg},${cb})`);sg.addColorStop(1,`rgb(${cr-25},${cg-25},${cb-25})`);cx.fillStyle=sg;cx.fillRect(0,0,W,H/2);
-  const fg2=cx.createLinearGradient(0,H/2,0,H);fg2.addColorStop(0,`rgb(${fr-15},${fg-15},${fb-15})`);fg2.addColorStop(1,`rgb(${fr},${fg},${fb})`);cx.fillStyle=fg2;cx.fillRect(0,H/2,W,H/2);
+  const NR=RW, hFov=FOV/2;
+  const[fr,fg,fb]=ld.fc, [cr,cg,cb]=ld.cc;
+  const o=octx; // Offscreen Context
+
+  // Decke
+  const sg=o.createLinearGradient(0,0,0,RH/2);
+  sg.addColorStop(0,`rgb(${cr},${cg},${cb})`);
+  sg.addColorStop(1,`rgb(${Math.max(0,cr-32)},${Math.max(0,cg-32)},${Math.max(0,cb-32)})`);
+  o.fillStyle=sg; o.fillRect(0,0,RW,RH/2);
+
+  // Boden
+  const fg2=o.createLinearGradient(0,RH/2,0,RH);
+  fg2.addColorStop(0,`rgb(${Math.max(0,fr-22)},${Math.max(0,fg-22)},${Math.max(0,fb-22)})`);
+  fg2.addColorStop(1,`rgb(${fr},${fg},${fb})`);
+  o.fillStyle=fg2; o.fillRect(0,RH/2,RW,RH/2);
+
+  // Z-Buffer (Float32Array für Performance)
   const zBuf=new Float32Array(NR);
+  const hbOff=(bobY*RH*0.022)|0;
+  raysHit=0;
+
   for(let r=0;r<NR;r++){
     const ang=player.a-hFov+(r/NR)*FOV;
     const hit=castRay(player.x,player.y,ang);
-    const cd=hit.d*Math.cos(ang-player.a);zBuf[r]=cd;
-    if(hit.cell===0)continue;
-    const wh=Math.min(H,(H/cd)|0),wt=((H-wh)/2)|0;
-    let sh=Math.max(0,1-cd/MAXD);if(hit.side==='NS')sh*=.7;
-    let t=hit.cell===2?tex.w2:hit.cell===4?tex.door:tex.w1;
-    if(t){const tx2=((hit.wallX*TS)|0);cx.drawImage(t,tx2,0,1,TS,r,wt,1,wh);cx.fillStyle=`rgba(0,0,0,${1-sh})`;cx.fillRect(r,wt,1,wh);}
-    else{const[wr,wg,wb]=ld.wc;cx.fillStyle=`rgb(${(wr*sh)|0},${(wg*sh)|0},${(wb*sh)|0})`;cx.fillRect(r,wt,1,wh);}
+    const cd=Math.max(0.01, hit.d*Math.cos(ang-player.a));
+    zBuf[r]=cd;
+    if(hit.cell===0) continue;
+    raysHit++;
+    const wh=Math.min(RH*2,(RH/cd)|0);
+    const wt=((RH-wh)/2+hbOff)|0;
+    let shade=Math.max(0.04, 1-cd/MAXD);
+    if(hit.side==='NS') shade*=0.62;
+    // Textur wählen
+    let tx=hit.cell===2?tex.w2:hit.cell===4?tex.door:hit.cell===9?tex.exit:tex.w1;
+    if(tx){
+      const txX=Math.min(TS-1,(hit.wallX*TS)|0);
+      o.drawImage(tx,txX,0,1,TS,r,wt,1,wh);
+      o.fillStyle=`rgba(0,0,0,${(1-shade).toFixed(2)})`;
+      o.fillRect(r,wt,1,wh);
+    }
   }
-  // Sprites
+
+  // Partikel (nach Sprites)
+  // → wird nach renderScene() separat aufgerufen
+
+  // Sprites (sortiert far→near)
   const spList=[];
-  enemies.forEach(e=>{if(!e.dead){const dx=e.x-player.x,dy=e.y-player.y;spList.push({...e,dist2:dx*dx+dy*dy,isE:true});}});
-  pickups.forEach(p=>{if(!p.taken){const dx=p.x-player.x,dy=p.y-player.y;spList.push({...p,dist2:dx*dx+dy*dy,isP:true});}});
+  enemies.forEach(e=>{ if(!e.dead){ const dx=e.x-player.x,dy=e.y-player.y; spList.push({...e,dist2:dx*dx+dy*dy,isE:true}); }});
+  pickups.forEach(p=>{ if(!p.taken){ const dx=p.x-player.x,dy=p.y-player.y; spList.push({...p,dist2:dx*dx+dy*dy,isP:true}); }});
   spList.sort((a,b)=>b.dist2-a.dist2);
+  spritesDrawn=0;
+
   spList.forEach(sp=>{
-    const dx=sp.x-player.x,dy=sp.y-player.y,dist=Math.sqrt(sp.dist2);if(dist<.1)return;
-    let sa=Math.atan2(dy,dx)-player.a;while(sa>Math.PI)sa-=Math.PI*2;while(sa<-Math.PI)sa+=Math.PI*2;
-    if(Math.abs(sa)>FOV*.7)return;
-    const sx=(W/2)*(1+sa/hFov),sh2=Math.min(H*2,(H/dist)|0),sl=(sx-sh2/2)|0;
-    let spTex=null;
-    if(sp.isE)spTex=sp.boss?sprBoss:sprs[sp.t%3];
-    else if(sp.isP)spTex=sp.t==='c'?sprCoffee:sprAmmo;
-    if(!spTex)return;
-    for(let sx2=Math.max(0,sl);sx2<Math.min(W,sl+sh2);sx2++){
-      if(dist<zBuf[sx2]){const tx2=((sx2-sl)/sh2*TS)|0;const wt2=((H-sh2)/2)|0;cx.drawImage(spTex,tx2,0,1,TS,sx2,wt2,1,sh2);const fade=Math.max(0,1-dist/7);cx.fillStyle=`rgba(0,0,0,${1-fade})`;cx.fillRect(sx2,wt2,1,sh2);}
+    const dx=sp.x-player.x, dy=sp.y-player.y;
+    const dist=Math.sqrt(sp.dist2); if(dist<0.1)return;
+    let sa=Math.atan2(dy,dx)-player.a;
+    while(sa>Math.PI)sa-=Math.PI*2; while(sa<-Math.PI)sa+=Math.PI*2;
+    if(Math.abs(sa)>FOV*0.75) return;
+
+    const sx=(RW/2)*(1+sa/hFov);
+    const wobble=sp.isE&&sp.alert?Math.sin(Date.now()*0.006+sp.x*1.7)*3.5:Math.sin(Date.now()*0.003+sp.x)*1.2;
+    const sh2=Math.min(RH*1.8,(RH/dist)|0);
+    const sl=(sx-sh2/2)|0;
+    const wt2=((RH-sh2)/2+hbOff+wobble)|0;
+    let spTex=sp.isE?(sp.boss?sprBoss:sprs[sp.t%3]):sp.isP?(sp.t==='c'?sprCoffee:sprAmmo):null;
+    if(!spTex) return;
+
+    for(let sx2=Math.max(0,sl);sx2<Math.min(RW,sl+sh2);sx2++){
+      if(dist<zBuf[sx2]){
+        const txX=Math.min(TS-1,((sx2-sl)/sh2*TS)|0);
+        o.drawImage(spTex,txX,0,1,TS,sx2,wt2,1,sh2);
+        const fade=Math.max(0,1-dist/9);
+        o.fillStyle=`rgba(0,0,0,${(1-fade).toFixed(2)})`;
+        o.fillRect(sx2,wt2,1,sh2);
+        spritesDrawn++;
+      }
+    }
+    // HP-Balken
+    if(sp.isE){
+      const maxHP=sp.boss?6:2;
+      const barW=Math.max(18,sh2*0.5);
+      o.fillStyle='#333'; o.fillRect(sx-barW/2,wt2-9,barW,5);
+      o.fillStyle=sp.boss?'#FFD700':'#f00';
+      o.fillRect(sx-barW/2,wt2-9,barW*(sp.hp/maxHP),5);
     }
   });
 }
 
+// ─── Exit-Glow Overlay ─────────────────────────────────────────
+function renderExitGlow(){
+  const alive=enemies.filter(e=>!e.dead).length;
+  if(alive>0) return;
+  const pulse=Math.sin(Date.now()*0.004)*0.5+0.5;
+  octx.fillStyle=`rgba(0,200,60,${pulse*0.14})`;
+  octx.fillRect(0,0,RW,RH);
+  // Banner
+  octx.fillStyle=`rgba(0,220,70,${0.75+pulse*0.25})`;
+  octx.font=`bold ${Math.max(10,RW*0.028)|0}px monospace`;
+  octx.textAlign='center';
+  octx.fillText('▶ EXIT FREI – Gehe zur grünen Tür!',RW/2,30);
+}
+
+// ─── HUD (auf Offscreen) ───────────────────────────────────────
+function renderHUD(){
+  const o=octx;
+  // HP-Balken
+  const bw=Math.min(140,RW*0.28), bh=12, bx=12, by=RH-48;
+  o.fillStyle='rgba(0,0,0,0.6)'; o.fillRect(bx-2,by-2,bw+4,bh+4);
+  o.fillStyle='#222'; o.fillRect(bx,by,bw,bh);
+  const hp=Math.max(0,player.hp);
+  o.fillStyle=hp>60?'#3fb950':hp>30?'#F0A020':'#f85149';
+  o.fillRect(bx,by,bw*(hp/100),bh);
+  o.fillStyle='rgba(255,255,255,0.07)'; o.fillRect(bx,by,bw,bh/2);
+  o.fillStyle='white'; o.font=`bold ${Math.max(8,RH*0.028)|0}px monospace`; o.textAlign='left';
+  o.fillText(`❤️ ${hp}`,bx+3,by+9);
+
+  // Ammo
+  o.fillStyle=player.ammo>5?'#F0A020':'#f85149';
+  o.font=`bold ${Math.max(9,RH*0.032)|0}px monospace`; o.textAlign='left';
+  o.fillText(`☕ ${player.ammo}/20`,12,RH-52);
+  // Ammo-Dots
+  for(let i=0;i<Math.min(20,player.ammo);i++){
+    const col=i%10, row=(i/10)|0;
+    const tx=12+col*11, ty=RH-36+row*10;
+    o.fillStyle=player.ammo>5?'#DC6414':'#f85149';
+    o.fillRect(tx,ty,8,6);
+    o.fillStyle='rgba(40,12,0,0.8)'; o.fillRect(tx+1,ty+1,6,3);
+  }
+}
+
+// ─── Waffe (direkt auf Display-Canvas) ─────────────────────────
 function renderWeapon(){
-  // ── Waffe direkt zeichnen ──────────────────────────
-  const sc=Math.min(W,H*1.3);     // Skalierung
-  const bW=sc*.28, bH=sc*.32;     // Becherbreite/-höhe
-  
-  // Animations-Offset (Werfen: nach oben + rechts kippen)
-  const animT=wAnim?wFrame/3:0;   // 0..1 während Anim
-  const offX=W*.5 + animT*sc*.08; // Becher nach rechts beim Wurf
-  const offY=H   - animT*sc*.12;  // Becher nach oben beim Wurf
-  const rot  =animT*0.4;          // leichte Rotation beim Wurf
-  
-  // Füllstand = Ammo-Ratio (UNABHÄNGIG von Animation!)
-  const fillRatio=player.ammo/20; // 0.0 = leer, 1.0 = voll
-  const coffeeH  =fillRatio*bH*.75;
-  
-  cx.save();
-  cx.translate(offX, offY);
-  cx.rotate(rot);
+  const sc=Math.min(DW*0.65,DH*0.88);
+  const bW=sc*0.27, bH=sc*0.31;
+  const baseX=DW*0.78, baseY=DH+bH*0.18;
+  const animProg=wAnimT>0?Math.sin(wAnimT*Math.PI):0;
+  const offX=animProg*bW*0.14, offY=-animProg*bH*0.38;
+  const rot=animProg*-0.32;
+  const fillRatio=Math.max(0,player.ammo/20);
+  const coffeeH=fillRatio*bH*0.8;
+
+  ctx.save();
+  ctx.translate(baseX+offX, baseY+offY);
+  ctx.rotate(rot);
+
+  // Schatten
+  ctx.fillStyle='rgba(0,0,0,0.22)';
+  ctx.fillRect(-bW*0.46,-bH*0.88+9,bW+5,bH+5);
 
   // Hand
-  cx.fillStyle='#c87040';
-  cx.beginPath();cx.ellipse(bW*.15,bH*.1,bW*.42,bH*.28,.15,0,Math.PI*2);cx.fill();
-  // Finger
+  ctx.fillStyle='#bf6e38';
+  ctx.beginPath(); ctx.ellipse(bW*0.1,bH*0.06,bW*0.42,bH*0.26,0.12,0,Math.PI*2); ctx.fill();
   for(let i=0;i<4;i++){
-    cx.fillStyle=`rgb(${180+i*8},${100+i*5},${50+i*3})`;
-    cx.beginPath();cx.ellipse(-bW*.35+i*bW*.25,-bH*.22,bW*.1,bH*.17,.08*(i-1.5),0,Math.PI*2);cx.fill();
+    ctx.fillStyle=`rgb(${175+i*7},${95+i*5},${44+i*4})`;
+    ctx.beginPath(); ctx.ellipse(-bW*0.38+i*bW*0.24,-bH*0.2,bW*0.09,bH*0.17,0.07*(i-1.5),0,Math.PI*2); ctx.fill();
   }
-  // Becher-Körper
-  cx.fillStyle='#ececec';
-  cx.fillRect(-bW*.45,-bH*.92,bW,bH);
-  // Kaffee-Füllstand
-  if(coffeeH>2){
-    cx.fillStyle='#2d0e00';
-    cx.fillRect(-bW*.43,-bH*.92+bH-coffeeH,bW*.96,coffeeH);
-    // Kaffee-Glanz
-    cx.fillStyle='rgba(255,140,0,.25)';
-    cx.fillRect(-bW*.43,-bH*.92+bH-coffeeH,bW*.96,3);
+  // Becher
+  ctx.fillStyle='#e8e8e8'; ctx.fillRect(-bW*0.46,-bH*0.9,bW,bH);
+  // Kaffee
+  if(coffeeH>1){
+    ctx.fillStyle='#2a0d00'; ctx.fillRect(-bW*0.44,-bH*0.9+bH-coffeeH,bW*0.96,coffeeH);
+    ctx.fillStyle='rgba(255,120,0,0.2)'; ctx.fillRect(-bW*0.44,-bH*0.9+bH-coffeeH,bW*0.96,Math.min(3,coffeeH*0.12));
   }
-  // Dampf (nur wenn halbvoll+)
-  if(fillRatio>.4){
-    cx.strokeStyle=`rgba(220,220,220,${fillRatio*.6})`;cx.lineWidth=3;
+  // Dampf
+  if(fillRatio>0.45){
+    ctx.strokeStyle=`rgba(225,225,225,${fillRatio*0.52})`; ctx.lineWidth=2.5;
     for(let i=0;i<3;i++){
-      const t2=Date.now()/800+i;
-      cx.beginPath();
-      cx.moveTo(-bW*.25+i*bW*.25,-bH*.95);
-      cx.quadraticCurveTo(-bW*.15+i*bW*.25+Math.sin(t2)*8,-bH*1.15,-bW*.25+i*bW*.25,-bH*1.3);
-      cx.stroke();
+      const t2=Date.now()/950+i*1.1;
+      ctx.beginPath();
+      ctx.moveTo(-bW*0.28+i*bW*0.26,-bH*0.92);
+      ctx.quadraticCurveTo(-bW*0.18+i*bW*0.26+Math.sin(t2)*6,-bH*1.14,-bW*0.28+i*bW*0.26,-bH*1.28);
+      ctx.stroke();
     }
   }
-  // Becher-Glanz
-  cx.fillStyle='rgba(255,255,255,.32)';
-  cx.fillRect(-bW*.42,-bH*.9,bW*.12,bH*.8);
+  // Glanz
+  ctx.fillStyle='rgba(255,255,255,0.25)'; ctx.fillRect(-bW*0.44,-bH*0.88,bW*0.12,bH*0.8);
   // Henkel
-  cx.strokeStyle='#d0d0d0';cx.lineWidth=5;
-  cx.beginPath();cx.arc(bW*.58,-bH*.5,bH*.22,-Math.PI*.5,Math.PI*.5);cx.stroke();
-  // Becher-Rand oben
-  cx.fillStyle='#fff';cx.fillRect(-bW*.47,-bH*.93,bW*1.06,7);
-  cx.restore();
+  ctx.strokeStyle='#d0d0d0'; ctx.lineWidth=5;
+  ctx.beginPath(); ctx.arc(bW*0.56,-bH*0.44,bH*0.24,-Math.PI*0.5,Math.PI*0.5); ctx.stroke();
+  // Rand oben
+  ctx.fillStyle='#f2f2f2'; ctx.fillRect(-bW*0.48,-bH*0.92,bW*1.04,7);
+  ctx.restore();
 
-  // ── Projektile rendern ─────────────────────────────
+  // Projektile
   const hFov2=FOV/2;
   projectiles.forEach(p=>{
-    const dx=p.x-player.x,dy=p.y-player.y,dist=Math.hypot(dx,dy);
-    if(dist<.15||dist>10)return;
+    const dx=p.x-player.x, dy=p.y-player.y, dist=Math.hypot(dx,dy);
+    if(dist<0.2||dist>10) return;
     let ang=Math.atan2(dy,dx)-player.a;
-    while(ang>Math.PI)ang-=Math.PI*2;while(ang<-Math.PI)ang+=Math.PI*2;
-    if(Math.abs(ang)>FOV*.55)return;
-    const sx=(W/2)*(1+ang/hFov2);
-    const ph=Math.max(10,Math.min(70,(H/dist)*.35))|0;
-    cx.save();
-    cx.translate(sx,H/2);
-    cx.rotate(p.rot);
-    // Becher
-    cx.fillStyle='#ececec';cx.fillRect(-ph*.3,-ph*.4,ph*.6,ph*.82);
-    cx.fillStyle='#2d0e00';cx.fillRect(-ph*.27,-ph*.36,ph*.54,ph*.35);
-    cx.strokeStyle='#ccc';cx.lineWidth=Math.max(1.5,ph*.07);
-    cx.beginPath();cx.arc(ph*.33,-ph*.05,ph*.22,-Math.PI/2,Math.PI/2);cx.stroke();
-    // Kaffee-Spritzer am Ende der Lebensdauer
-    if(p.life<p.maxLife*.4){
-      cx.fillStyle='rgba(45,14,0,.7)';
-      for(let i=0;i<5;i++){const a2=i*1.26+p.rot;const r2=ph*(0.5+i*.15);cx.beginPath();cx.arc(Math.cos(a2)*r2,Math.sin(a2)*r2,ph*.12,0,Math.PI*2);cx.fill();}
+    while(ang>Math.PI)ang-=Math.PI*2; while(ang<-Math.PI)ang+=Math.PI*2;
+    if(Math.abs(ang)>FOV*0.6) return;
+    const sx=(DW/2)*(1+ang/hFov2);
+    const ph=Math.max(8,Math.min(60,(DH/dist)*0.32))|0;
+    ctx.save(); ctx.translate(sx,DH/2); ctx.rotate(p.rot);
+    ctx.fillStyle='#e8e8e8'; ctx.fillRect(-ph*0.3,-ph*0.42,ph*0.6,ph*0.85);
+    ctx.fillStyle='#2a0d00'; ctx.fillRect(-ph*0.27,-ph*0.38,ph*0.54,ph*0.36);
+    ctx.strokeStyle='#ccc'; ctx.lineWidth=Math.max(1.5,ph*0.07);
+    ctx.beginPath(); ctx.arc(ph*0.33,-ph*0.06,ph*0.22,-Math.PI/2,Math.PI/2); ctx.stroke();
+    if(p.life<p.maxLife*0.35){
+      ctx.fillStyle='rgba(42,13,0,0.75)';
+      for(let i=0;i<5;i++){ const a2=i*1.26+p.rot,r2=ph*(0.44+i*0.13); ctx.beginPath(); ctx.arc(Math.cos(a2)*r2,Math.sin(a2)*r2,ph*0.11,0,Math.PI*2); ctx.fill(); }
     }
-    cx.restore();
+    ctx.restore();
   });
+}
 
-  // ── Ammo-HUD unten links ───────────────────────────
-  // Tassen-Symbole
-  for(let i=0;i<20;i++){
-    const row=i<10?0:1, col=i<10?i:i-10;
-    const bx=14+col*13, by=H-34+row*14;
-    const filled=i<player.ammo;
-    cx.fillStyle=filled?(player.ammo>5?'#DC6414':'#ff3300'):'rgba(255,255,255,.12)';
-    cx.fillRect(bx,by,10,7);
-    if(filled){cx.fillStyle='rgba(45,14,0,.85)';cx.fillRect(bx+1,by+1,8,4);}
+// ─── Minimap (OffscreenCanvas) ─────────────────────────────────
+let mmOff; // Pre-gerenderter statischer Layer
+function buildMinimapCache(){
+  mmOff = document.createElement('canvas');
+  mmOff.width = mmOff.height = 110;
+  const S=110, cs=S/map[0].length;
+  const t=mmOff.getContext('2d');
+  t.fillStyle='rgba(0,0,0,0.78)'; t.fillRect(0,0,S,S);
+  for(let ry=0;ry<map.length;ry++) for(let rx=0;rx<map[ry].length;rx++){
+    const c=map[ry][rx]; if(!c) continue;
+    t.fillStyle=c===9?'#00cc44':c===4?'#8B5E3C':c===2?'#3a6aaa':'#cc4444';
+    t.fillRect(rx*cs,ry*cs,cs-1,cs-1);
   }
-  cx.fillStyle=player.ammo>5?'#F0A020':'#ff4400';
-  cx.font=`bold ${Math.max(10,W*.018)|0}px monospace`;cx.textAlign='left';
-  cx.fillText(`☕ ${player.ammo}`,14,H-38);
 }
 
 function renderMinimap(){
-  const S=110,cs=S/map[0].length;
-  mx.clearRect(0,0,S,S);mx.fillStyle='rgba(0,0,0,.75)';mx.fillRect(0,0,S,S);
-  for(let my2=0;my2<map.length;my2++)for(let mx2=0;mx2<map[my2].length;mx2++)if(map[my2][mx2]){mx.fillStyle=map[my2][mx2]===4?'#8B5E3C':'#e66';mx.fillRect(mx2*cs,my2*cs,cs-1,cs-1);}
-  mx.fillStyle='#0f0';mx.fillRect(ld.exit.x*cs-2,ld.exit.y*cs-2,4,4);
-  enemies.forEach(e=>{if(!e.dead){mx.fillStyle=e.boss?'#ff0':'#f80';mx.beginPath();mx.arc(e.x*cs,e.y*cs,2,0,Math.PI*2);mx.fill();}});
-  mx.fillStyle='#08f';mx.beginPath();mx.arc(player.x*cs,player.y*cs,3,0,Math.PI*2);mx.fill();
-  mx.strokeStyle='#08f';mx.lineWidth=1;mx.beginPath();mx.moveTo(player.x*cs,player.y*cs);mx.lineTo(player.x*cs+Math.cos(player.a)*8,player.y*cs+Math.sin(player.a)*8);mx.stroke();
+  if(!showMM) return;
+  const S=110, cs=S/map[0].length;
+  mmx.clearRect(0,0,S,S);
+  // Statischer Layer
+  if(mmOff) mmx.drawImage(mmOff,0,0);
+  // Exit-Marker
+  mmx.fillStyle='#00cc44'; mmx.fillRect(ld.exit.x*cs-2,ld.exit.y*cs-2,5,5);
+  // Dynamisch: Enemies
+  enemies.forEach(e=>{ if(!e.dead){ mmx.fillStyle=e.boss?'#FFD700':'#f80'; mmx.beginPath(); mmx.arc(e.x*cs,e.y*cs,2.5,0,Math.PI*2); mmx.fill(); }});
+  // Spieler
+  mmx.fillStyle='#4af'; mmx.beginPath(); mmx.arc(player.x*cs,player.y*cs,3.5,0,Math.PI*2); mmx.fill();
+  mmx.strokeStyle='#4af'; mmx.lineWidth=1.5; mmx.beginPath();
+  mmx.moveTo(player.x*cs,player.y*cs);
+  mmx.lineTo(player.x*cs+Math.cos(player.a)*10,player.y*cs+Math.sin(player.a)*10);
+  mmx.stroke();
 }
 
-// ─── Update ───────────────────────────────────────
+// ─── Debug Overlay ─────────────────────────────────────────────
+function updateDebug(dt){
+  frameCount++;
+  fpsTimer+=dt;
+  if(fpsTimer>=0.5){ fps=Math.round(frameCount/fpsTimer); frameCount=0; fpsTimer=0; }
+  if(!showDebug) return;
+  const alive=enemies.filter(e=>!e.dead).length;
+  document.getElementById('debug').innerHTML=
+    `FPS: ${fps} | dt: ${(dt*1000).toFixed(1)}ms<br>`+
+    `Rays: ${raysHit}/${RW} | Sprites: ${spritesDrawn}<br>`+
+    `Scale: ${SCALE}× (${RW}×${RH}→${DW}×${DH})<br>`+
+    `FOV: ${(FOV*180/Math.PI).toFixed(0)}°<br>`+
+    `Pos: (${player.x.toFixed(1)},${player.y.toFixed(1)}) Ang: ${(player.a*180/Math.PI).toFixed(0)}°<br>`+
+    `Enemies alive: ${alive} | Kills: ${kills}<br>`+
+    `Ammo: ${player.ammo} | HP: ${player.hp}`;
+}
+
+// ─── Update ────────────────────────────────────────────────────
 function update(dt){
-  const cos=Math.cos(player.a),sin=Math.sin(player.a);
-  const spd=2.8*dt,rot=2.0*dt;
-  if(keys['ArrowLeft']||keys['a']||keys['A'])player.a-=rot;
-  if(keys['ArrowRight']||keys['d']||keys['D'])player.a+=rot;
-  let nx=player.x,ny=player.y;
-  if(keys['ArrowUp']||keys['w']||keys['W']){nx+=cos*spd;ny+=sin*spd;}
-  if(keys['ArrowDown']||keys['s']||keys['S']){nx-=cos*spd;ny-=sin*spd;}
-  if(!isWall(nx,player.y))player.x=nx;
-  if(!isWall(player.x,ny))player.y=ny;
+  const cosA=Math.cos(player.a), sinA=Math.sin(player.a);
+  const spd=3.0*dt, rotSpd=2.1*dt;
+
+  if(keys['ArrowLeft']||keys['a']||keys['A']) player.a-=rotSpd;
+  if(keys['ArrowRight']||keys['d']||keys['D']) player.a+=rotSpd;
+
+  let dx=0, dy=0, moving=false;
+  if(keys['ArrowUp']||keys['w']||keys['W']){ dx+=cosA*spd; dy+=sinA*spd; moving=true; }
+  if(keys['ArrowDown']||keys['s']||keys['S']){ dx-=cosA*spd; dy-=sinA*spd; moving=true; }
+  // Strafe links/rechts
+  if(keys['q']||keys['Q']){ dx+=sinA*spd; dy-=cosA*spd; moving=true; }
+  if(keys['e']||keys['E']){ dx-=sinA*spd; dy+=cosA*spd; moving=true; }
+  // Wall-Slide: X und Y getrennt prüfen → sanftes Gleiten an Wänden
+  const PAD=0.28; // Kollisions-Puffer vom Spieler zur Wand
+  const nx=player.x+dx, ny=player.y+dy;
+  if(!isWall(nx+Math.sign(dx)*PAD, player.y)) player.x=nx;
+  if(!isWall(player.x, ny+Math.sign(dy)*PAD)) player.y=ny;
+
+  // Headbob
+  if(moving){ bobT+=dt*7; bobY=Math.sin(bobT); }
+  else{ bobY*=0.83; if(Math.abs(bobY)<0.01)bobY=0; }
+
+  // Weapon-Animation (sin-Kurve)
+  if(wAnimT>0) wAnimT=Math.max(0,wAnimT-dt*4);
+
+  // Doors + Partikel
+  updateDoors(dt);
+  updateParticles(dt);
+
+  // Projektile
+  projectiles=projectiles.filter(p=>{
+    p.x+=p.vx*dt; p.y+=p.vy*dt; p.rot+=9*dt; p.life-=dt;
+    return !isWall(p.x,p.y)&&p.life>0;
+  });
 
   // Pickups
-  pickups.forEach(p=>{if(p.taken)return;if(Math.hypot(p.x-player.x,p.y-player.y)<.65){p.taken=true;if(p.t==='c'){player.hp=Math.min(100,player.hp+25);msg('+25 HP ☕');}else{player.ammo=Math.min(20,player.ammo+5);msg('+5 Ammo ☕');}updHUD();}});
-
-  // Exit
-  if(Math.hypot(ld.exit.x-player.x,ld.exit.y-player.y)<1.2){
-    const al=enemies.filter(e=>!e.dead).length;
-    if(al===0){gs='win';document.getElementById('winMsg').textContent=`${kills} Zombies besiegt!`;showScreen('sWin');}
-    else msg(`Noch ${al} Zombies übrig!`);
-  }
-
-  // Weapon anim
-  wTimer+=dt;
-  if(wAnim&&wTimer>.08){wTimer=0;wFrame=(wFrame+1)%4;if(wFrame===3)wAnim=false;}
-
-  // Projektile updaten
-  projectiles=projectiles.filter(p=>{
-    p.x+=p.vx*dt;p.y+=p.vy*dt;p.rot+=8*dt;p.life-=dt;
-    // Wand-Kollision → Splash
-    if(isWall(p.x,p.y))return false;
-    return p.life>0;
+  pickups.forEach(p=>{
+    if(p.taken) return;
+    if(Math.hypot(p.x-player.x,p.y-player.y)<0.7){
+      p.taken=true;
+      if(p.t==='c'){ player.hp=Math.min(100,player.hp+25); msg('+25 HP ☕'); sndPickup(); }
+      else{ player.ammo=Math.min(20,player.ammo+5); msg('+5 Ammo ☕'); sndPickup(); }
+      updHUD();
+    }
   });
+
+  // Exit-Check
+  const aliveCount=enemies.filter(e=>!e.dead).length;
+  if(Math.hypot(ld.exit.x-player.x,ld.exit.y-player.y)<1.1){
+    if(aliveCount===0){ gs='win'; sndWin(); document.getElementById('winMsg').textContent=`${kills} Zombies neutralisiert! Stockwerk ${lvlIdx+1} befreit.`; showScreen('sWin'); }
+    else msg(`Erst ${aliveCount} Zombie${aliveCount===1?'':'s'} besiegen!`);
+  }
 
   // Enemies
-  enemies.forEach(e=>{
-    if(e.dead)return;
-    const dx=player.x-e.x,dy=player.y-e.y,dist=Math.hypot(dx,dy);
-    if(dist<8)e.alert=true;
-    if(e.alert&&dist>.65){
-      const s=(e.boss?1.6:1.1)*dt;
-      const nx2=e.x+(dx/dist)*s,ny2=e.y+(dy/dist)*s;
-      if(!isWall(nx2,e.y))e.x=nx2;if(!isWall(e.x,ny2))e.y=ny2;
+  enemies.forEach((e,ei)=>{
+    if(e.dead) return;
+    const dx=player.x-e.x, dy=player.y-e.y, dist=Math.hypot(dx,dy);
+    if(dist<10) e.alert=true;
+    if(e.alert&&dist>0.72){
+      let movX=dx/dist, movY=dy/dist;
+      // Zombie-Separation
+      enemies.forEach((e2,j)=>{
+        if(j===ei||e2.dead) return;
+        const sdx=e.x-e2.x, sdy=e.y-e2.y, sd=Math.hypot(sdx,sdy);
+        if(sd<1.2&&sd>0.01){ movX+=sdx/sd*0.5; movY+=sdy/sd*0.5; }
+      });
+      const mv=(e.boss?1.75:1.18)*dt;
+      const mag=Math.hypot(movX,movY)||1;
+      const ex2=e.x+movX/mag*mv, ey2=e.y+movY/mag*mv;
+      if(!isWall(ex2,e.y)) e.x=ex2;
+      if(!isWall(e.x,ey2)) e.y=ey2;
     }
-    if(dist<.85){e.atkT=(e.atkT||0)+dt;if(e.atkT>(e.boss?.7:1.1)){e.atkT=0;const dmg=e.boss?20:10;player.hp-=dmg;hitFlash();updHUD();if(player.hp<=0){gs='dead';showScreen('sDead');}}}
+    if(dist<0.9){
+      e.atkT=(e.atkT||0)+dt;
+      if(e.atkT>(e.boss?0.65:1.05)){
+        e.atkT=0;
+        player.hp-=e.boss?22:10;
+        hitFlash(); sndHurt(); updHUD();
+        if(player.hp<=0){ gs='dead'; showScreen('sDead'); }
+      }
+    }
   });
+
+  updateDebug(dt);
 }
 
-function isWall(x,y){const mx2=x|0,my2=y|0;if(my2<0||my2>=map.length||mx2<0||mx2>=map[0].length)return true;return map[my2][mx2]>0;}
+function isWall(x,y){
+  const ix=x|0, iy=y|0;
+  if(iy<0||iy>=map.length||ix<0||ix>=map[0].length) return true;
+  const t=map[iy][ix];
+  if(t===9) return false; // Exit immer begehbar
+  if(t===4){ const d=doorStates[`${iy},${ix}`]; return !d||d.t<0.5; } // Tür: erst bei >50% offen
+  return t>0;
+}
 
-// ─── Game control ─────────────────────────────────
+// ─── Game Control ──────────────────────────────────────────────
 function loadLvl(i){
-  lvlIdx=i;ld=MAPS[i];map=ld.map.map(r=>[...r]);
+  lvlIdx=i; ld=MAPS[i]; map=ld.map.map(r=>[...r]);
   player={x:ld.ps.x,y:ld.ps.y,a:ld.ps.a,hp:100,ammo:10};
   enemies=ld.enemies.map(e=>({...e,hp:e.boss?e.hp||6:2,dead:false,alert:false,atkT:0}));
-  // Exit-Tür direkt in die Südwand (Zeile 19) an Spalte 17 setzen - gut sichtbar
-  const ex=ld.exit;
-  const tc=Math.max(1,Math.min(map[0].length-2,(ex.x|0)));
-  const tr=Math.max(1,Math.min(map.length-2,(ex.y|0)+1));
-  // Versuche Wand in Zeile des Exits oder darunter
-  // Exit-Tür: Setze Wand-Tile direkt vor Exit auf Tür-Typ
-  // Der Exit ist bei 18.5,18.5 → Tür in Südwand (Zeile 19) bei Spalte 18
-  // UND eine freistehende Tür bei 17,18 (eine Reihe vor dem Exit)
-  if(map[19]&&map[19][18]===1) map[19][18]=4;
-  if(map[18]&&map[18][19]===1) map[18][19]=4;
-  // Fallback: erste Wand in Richtung Exit setzen
-  for(let r=17;r<=19;r++){
-    for(let c=16;c<=19;c++){
-      if(map[r]&&map[r][c]===1){map[r][c]=4;break;}
-    }
-    if(map[r]&&map[r].includes(4))break;
-  }
-  projectiles=[];
   pickups=ld.pkups.map(p=>({...p,taken:false}));
-  kills=0;wFrame=3;wAnim=false;updHUD();
-  document.getElementById('hLvl').textContent=i+1;
+  projectiles=[]; kills=0; wAnimT=0; bobT=0; bobY=0;
+  initDoors();
+  buildMinimapCache();
+  updHUD(); document.getElementById('hLvl').textContent=i+1;
 }
 
-function startGame(){loadLvl(0);document.getElementById('hud').style.display='flex';showScreen('');gs='playing';if(raf)cancelAnimationFrame(raf);lastT=performance.now();loop(lastT);}
-function restartLvl(){loadLvl(lvlIdx);showScreen('');gs='playing';}
-function nextLvl(){if(lvlIdx+1>=MAPS.length){showScreen('sFin');gs='fin';}else{loadLvl(lvlIdx+1);showScreen('');gs='playing';}}
-function backMenu(){gs='menu';document.getElementById('hud').style.display='none';showScreen('sMenu');}
-function resume(){gs='playing';showScreen('');}
-function showScreen(id){['sMenu','sCtrl','sPause','sDead','sWin','sFin'].forEach(s=>{document.getElementById(s).classList.toggle('hidden',s!==id);});}
+// (Game-Control-Funktionen jetzt am Ende definiert)
 
-// ─── Loop ─────────────────────────────────────────
+// ─── Main Loop ─────────────────────────────────────────────────
 function loop(now){
-  const dt=Math.min(.05,(now-lastT)/1000);lastT=now;
-  if(gs==='playing'){update(dt);cx.clearRect(0,0,W,H);renderScene();renderWeapon();if(showMM)renderMinimap();}
+  const dt=Math.min(0.05,(now-lastT)/1000); // dt clamp: max 50ms
+  lastT=now;
+
+  if(gs==='playing'){
+    update(dt);
+
+    // 1. Szene auf Offscreen rendern
+    octx.clearRect(0,0,RW,RH);
+    renderScene();
+    renderParticles();
+    renderExitGlow();
+    renderHUD();
+
+    // 2. Offscreen → Display Canvas (upscale mit nearest-neighbor)
+    ctx.imageSmoothingEnabled=false;
+    ctx.drawImage(offscreen,0,0,RW,RH,0,0,DW,DH);
+
+    // 3. Waffe direkt auf Display (volle Auflösung)
+    renderWeapon();
+    renderMinimap();
+
+    // Debug
+    document.getElementById('debug').style.display=showDebug?'block':'none';
+  }
+
   raf=requestAnimationFrame(loop);
 }
 
-// ─── Input ────────────────────────────────────────
+// ─── Pointer Lock (Maus-Look) ─────────────────────────────────
+let mouseX=0;
+cv.addEventListener('click',()=>{
+  if(gs==='playing'&&!document.pointerLockElement){
+    cv.requestPointerLock();
+  }
+});
+document.addEventListener('pointerlockchange',()=>{
+  if(document.pointerLockElement===cv){
+    msg('🖱️ Maus-Look aktiv – ESC zum Beenden');
+  }
+});
+document.addEventListener('mousemove',e=>{
+  if(document.pointerLockElement!==cv||gs!=='playing') return;
+  player.a+=e.movementX*0.002;
+});
+
+// ─── Input ─────────────────────────────────────────────────────
 document.addEventListener('keydown',e=>{
   keys[e.key]=true;
-  if(gs!=='playing')return;
-  if(e.key==='Escape'){gs='paused';showScreen('sPause');}
-  if(e.key===' '){e.preventDefault();attack();}
-  if(e.key==='f'||e.key==='F')openDoor();
-  if(e.key==='m'||e.key==='M')showMM=!showMM;
+  // Leertaste überspringt Story-Screen
+  if(e.key===' '&&document.getElementById('sStory')&&!document.getElementById('sStory').classList.contains('hidden')){
+    e.preventDefault(); startNextLvl(); return;
+  }
+  if(gs!=='playing') return;
+  if(e.key==='Escape'){ gs='paused'; showScreen('sPause'); }
+  if(e.key===' '){ e.preventDefault(); attack(); }
+  if(e.key==='f'||e.key==='F') interactDoor();
+  if(e.key==='m'||e.key==='M') showMM=!showMM;
+  if(e.key==='Tab'){ e.preventDefault(); showDebug=!showDebug; }
 });
-document.addEventListener('keyup',e=>{keys[e.key]=false;});
-cv.addEventListener('click',()=>{if(gs==='playing')attack();});
+document.addEventListener('keyup',e=>{ keys[e.key]=false; });
+// Klick: Pointer Lock aktivieren ODER angreifen
+cv.addEventListener('click',()=>{
+  if(gs!=='playing') return;
+  if(!document.pointerLockElement){ cv.requestPointerLock(); }
+  else{ attack(); }
+});
 
 function attack(){
-  if(player.ammo<=0){msg('Kein Kaffee! ☕ Pickup finden!');return;}
-  player.ammo--;wAnim=true;wFrame=0;wTimer=0;updHUD();
-  // Kaffee-Projektil abfeuern
+  if(player.ammo<=0){ msg('Kein Kaffee mehr! ☕'); return; }
+  player.ammo--; wAnimT=1; updHUD(); sndShoot();
   projectiles.push({
-    x:player.x+Math.cos(player.a)*.3,
-    y:player.y+Math.sin(player.a)*.3,
-    vx:Math.cos(player.a)*6,
-    vy:Math.sin(player.a)*6,
-    rot:0,life:1.2,maxLife:1.2
+    x:player.x+Math.cos(player.a)*0.4,
+    y:player.y+Math.sin(player.a)*0.4,
+    vx:Math.cos(player.a)*7,vy:Math.sin(player.a)*7,
+    rot:0,life:1.0,maxLife:1.0
   });
-  const hFov=FOV/2;let hit=false;
+  // Treffer-Check mit dynamischer Trefferzone
   enemies.forEach(e=>{
-    if(e.dead)return;
+    if(e.dead) return;
     const dx=e.x-player.x,dy=e.y-player.y,dist=Math.hypot(dx,dy);
-    if(dist>12)return;
+    if(dist>14) return;
     let diff=Math.atan2(dy,dx)-player.a;
-    while(diff>Math.PI)diff-=Math.PI*2;while(diff<-Math.PI)diff+=Math.PI*2;
-    if(Math.abs(diff)<.18){e.hp--;if(e.hp<=0){e.dead=true;kills++;updHUD();msg(e.boss?'☕ BOSS BESIEGT!':'☕ Neutralisiert!');}else{msg(e.boss?`Boss: ${e.hp} HP`:'Treffer!');}hit=true;}
+    while(diff>Math.PI)diff-=Math.PI*2; while(diff<-Math.PI)diff+=Math.PI*2;
+    const hitAngle=Math.max(0.07,Math.min(0.24,0.24-dist*0.014));
+    if(Math.abs(diff)<hitAngle){
+      e.hp--; sndHit();
+      if(e.hp<=0){
+        e.dead=true; kills++; updHUD();
+        emitParticles(e.x,e.y,12,'#9ecf60'); // Zombie-Blut
+        msg(e.boss?'☕ BOSS BESIEGT! CHAPEAU!':'☕ Zombie neutralisiert!');
+        sndKill();
+      } else {
+        emitParticles(e.x,e.y,5,'#2d0e00'); // Kaffee-Splash
+        msg(e.boss?`BOSS: ${e.hp}/6 HP – Weiter!`:'Treffer! ☕');
+      }
+    }
   });
 }
 
-function openDoor(){
-  const fx=(player.x+Math.cos(player.a)*1.2)|0,fy=(player.y+Math.sin(player.a)*1.2)|0;
-  if(fy>=0&&fy<map.length&&fx>=0&&fx<map[0].length&&map[fy][fx]===4){map[fy][fx]=0;msg('Tür geöffnet!');}
+// ─── Partikel-System ──────────────────────────────────────────
+function emitParticles(wx,wy,n,color){
+  for(let i=0;i<n;i++){
+    const ang=Math.random()*Math.PI*2;
+    const spd=0.5+Math.random()*2;
+    particles.push({
+      x:wx, y:wy,
+      vx:Math.cos(ang)*spd, vy:Math.sin(ang)*spd,
+      life:0.4+Math.random()*0.4,
+      maxLife:0.8,
+      color, size:0.04+Math.random()*0.08
+    });
+  }
+}
+
+function updateParticles(dt){
+  particles=particles.filter(p=>{
+    p.x+=p.vx*dt; p.y+=p.vy*dt;
+    p.vx*=0.88; p.vy*=0.88;
+    return (p.life-=dt)>0;
+  });
+}
+
+function renderParticles(){
+  const hFov=FOV/2;
+  particles.forEach(p=>{
+    const dx=p.x-player.x, dy=p.y-player.y, dist=Math.hypot(dx,dy);
+    if(dist<0.1||dist>8) return;
+    let ang=Math.atan2(dy,dx)-player.a;
+    while(ang>Math.PI)ang-=Math.PI*2; while(ang<-Math.PI)ang+=Math.PI*2;
+    if(Math.abs(ang)>FOV*0.65) return;
+    const sx=(RW/2)*(1+ang/hFov);
+    const ps=Math.max(1,Math.min(20,(RW*p.size/dist)|0));
+    const alpha=(p.life/p.maxLife).toFixed(2);
+    // Farbe mit Alpha
+    const hr=parseInt(p.color.slice(1,3),16);
+    const hg=parseInt(p.color.slice(3,5),16);
+    const hb=parseInt(p.color.slice(5,7),16);
+    octx.fillStyle=`rgba(${hr},${hg},${hb},${alpha})`;
+    octx.fillRect(sx-ps/2,(RH/2)-ps/2,ps,ps);
+  });
+}
+
+function interactDoor(){
+  const fx=(player.x+Math.cos(player.a)*1.3)|0;
+  const fy=(player.y+Math.sin(player.a)*1.3)|0;
+  if(fy<0||fy>=map.length||fx<0||fx>=map[0].length) return;
+  const cell=map[fy][fx];
+  if(cell===4){
+    const key=`${fy},${fx}`;
+    const d=doorStates[key];
+    if(!d) return;
+    if(d.state==='closed'||d.state==='closing'){ d.state='opening'; sndDoor(); msg('Tür öffnet sich...'); }
+    else if(d.state==='open'||d.state==='opening'){ d.state='closing'; sndDoor(); msg('Tür schließt sich...'); }
+  } else if(cell===9){
+    const alive=enemies.filter(e=>!e.dead).length;
+    if(alive===0){ gs='win'; sndWin(); document.getElementById('winMsg').textContent=`${kills} Zombies neutralisiert!`; showScreen('sWin'); }
+    else msg(`Erst ${alive} Zombie${alive===1?'':'s'} besiegen!`);
+  }
 }
 
 function updHUD(){
@@ -525,14 +1398,311 @@ function updHUD(){
 }
 
 let msgT=null;
-function msg(t){const el=document.getElementById('msg');el.textContent=t;el.style.opacity='1';clearTimeout(msgT);msgT=setTimeout(()=>el.style.opacity='0',2200);}
+function msg(t){ const el=document.getElementById('msg'); el.textContent=t; el.style.opacity='1'; clearTimeout(msgT); msgT=setTimeout(()=>el.style.opacity='0',2600); }
 
 let flashT=null;
-function hitFlash(){const el=document.getElementById('hitflash');el.style.background='rgba(220,50,20,.35)';clearTimeout(flashT);flashT=setTimeout(()=>el.style.background='rgba(220,50,20,0)',150);}
+function hitFlash(){ const el=document.getElementById('hitflash'); el.style.background='rgba(220,50,20,.42)'; clearTimeout(flashT); flashT=setTimeout(()=>el.style.background='rgba(220,50,20,0)',130); }
 
-// ─── Start ────────────────────────────────────────
-initTex();initSprites();showScreen('sMenu');
-requestAnimationFrame(loop);
+// ─── README aktualisieren (nur intern) ─────────────────────────
+// ─── Story-System ──────────────────────────────────────────────
+let pendingLvl = 0;
+
+function startGame(){
+  unlockAudio();
+  pendingLvl = 0;
+  showStory(0);
+}
+
+function showStory(i){
+  if(!STORIES[i]){ startLvl(i); return; }
+  const s = STORIES[i];
+  document.getElementById('storyChapter').textContent = s.ch.toUpperCase();
+  document.getElementById('storyTitle').textContent   = s.t;
+  // Zeilenumbrüche rendern
+  document.getElementById('storyText').innerHTML = s.txt.replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');
+  pendingLvl = i;
+  // Fortschrittsbalken
+  const pct = Math.round((i/MAPS.length)*100);
+  document.getElementById('storyProgressBar').style.width = pct+'%';
+  document.getElementById('storyProgressTxt').textContent = `Lvl ${i+1}/${MAPS.length}`;
+  showScreen('sStory');
+  document.getElementById('hud').style.display='flex';
+}
+
+function startNextLvl(){
+  startLvl(pendingLvl);
+}
+
+function startLvl(i){
+  loadLvl(i);
+  showScreen(''); gs='playing';
+  if(raf) cancelAnimationFrame(raf);
+  lastT = performance.now();
+  loop(lastT);
+}
+
+function nextLvl(){
+  const next = lvlIdx + 1;
+  if(next >= MAPS.length){
+    // Alle 11 Level geschafft!
+    gs = 'fin';
+    document.getElementById('hud').style.display = 'none';
+    showScreen('sFin');
+    sndWin();
+    // Editor dauerhaft freischalten
+    localStorage.setItem('officeDoomEditorUnlocked','1');
+    document.getElementById('editorBtn').style.display = 'block';
+  } else {
+    showStory(next);
+  }
+}
+
+function restartLvl(){ loadLvl(lvlIdx); showScreen(''); gs='playing'; }
+function backMenu(){
+  gs='menu';
+  document.getElementById('hud').style.display='none';
+  showScreen('sMenu');
+  // Editor-Button zeigen falls freigeschaltet
+  if(localStorage.getItem('officeDoomEditorUnlocked')==='1')
+    document.getElementById('editorBtn').style.display='block';
+}
+function resume(){ gs='playing'; showScreen(''); }
+function showScreen(id){
+  ['sMenu','sCtrl','sSettings','sPause','sDead','sWin','sFin','sStory','sEditor'].forEach(s=>
+    document.getElementById(s).classList.toggle('hidden',s!==id));
+}
+
+// ─── Geheimcode-Eingabe ────────────────────────────────────────
+function checkCode(val){
+  const hint = document.getElementById('codeHint');
+  if(val.length < 4){ hint.textContent=''; return; }
+  if(val === '1234'){
+    localStorage.setItem('officeDoomEditorUnlocked','1');
+    document.getElementById('editorBtn').style.display='block';
+    hint.textContent='🔓 Editor freigeschaltet!';
+    hint.style.color='#3fb950';
+    document.getElementById('codeInput').value='';
+    setTimeout(()=>{ showScreen('sEditor'); initEditor(); },400);
+  } else {
+    hint.textContent='❌ Falscher Code';
+    hint.style.color='#f85149';
+    document.getElementById('codeInput').value='';
+    setTimeout(()=>hint.textContent='',1500);
+  }
+}
+
+// ─── LEVEL-EDITOR ──────────────────────────────────────────────
+const ED_SIZE = 20;  // 20×20 Grid
+const ED_CELL = 21;  // Pixel pro Zelle
+let edGrid=[], edSpawn={r:1,c:1}, edEnemies=[], edPickups=[];
+let edSelected=1, edPainting=false, edPaintVal=1;
+
+const ED_TILES = [
+  {v:0, label:'Leer',      color:'#1a1a2e'},
+  {v:1, label:'Ziegel',    color:'#cc4444'},
+  {v:2, label:'Glas',      color:'#4488cc'},
+  {v:4, label:'Tür',       color:'#8B5E3C'},
+  {v:9, label:'EXIT',      color:'#1a8a2a'},
+  {v:'S',label:'Spawn ★', color:'#4af'},
+  {v:'E',label:'Zombie',   color:'#f80'},
+  {v:'B',label:'Boss 👑',  color:'#FFD700'},
+  {v:'C',label:'Kaffee ☕',color:'#DC6414'},
+  {v:'A',label:'Ammo 📦',  color:'#886600'},
+];
+
+let edCanvas, edCtx;
+
+function initEditor(){
+  edCanvas = document.getElementById('edCanvas');
+  edCtx    = edCanvas.getContext('2d');
+
+  // Palette aufbauen
+  const pal = document.getElementById('tilePalette');
+  pal.innerHTML = '';
+  ED_TILES.forEach(t=>{
+    const btn = document.createElement('div');
+    btn.style.cssText=`display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:5px;cursor:pointer;margin-bottom:3px;border:2px solid transparent;font-size:0.78rem;color:#ccc;`;
+    btn.innerHTML=`<span style="display:inline-block;width:14px;height:14px;background:${t.color};border-radius:2px;flex-shrink:0"></span>${t.label}`;
+    btn.onclick=()=>{ edSelected=t.v; document.querySelectorAll('#tilePalette div').forEach(b=>b.style.borderColor='transparent'); btn.style.borderColor='#F0A020'; };
+    if(t.v===1) btn.style.borderColor='#F0A020';
+    pal.appendChild(btn);
+  });
+
+  // Grid initialisieren (leerer Raum mit Außenwänden)
+  if(!edGrid.length) editorClear();
+
+  // Event-Listener
+  edCanvas.onmousedown=(e)=>{ edPainting=true; edPaintVal=edSelected; edPaint(e); };
+  edCanvas.onmousemove=(e)=>{ if(edPainting) edPaint(e); };
+  edCanvas.onmouseup  =()=>edPainting=false;
+  edCanvas.onmouseleave=()=>edPainting=false;
+  edCanvas.oncontextmenu=(e)=>{ e.preventDefault(); edSelected=0; edPaint(e); };
+  
+  edDraw();
+  updateEdInfo();
+}
+
+function edPaint(e){
+  const rect=edCanvas.getBoundingClientRect();
+  const c=Math.floor((e.clientX-rect.left)/ED_CELL);
+  const r=Math.floor((e.clientY-rect.top) /ED_CELL);
+  if(r<0||r>=ED_SIZE||c<0||c>=ED_SIZE) return;
+  const v = e.buttons===2 ? 0 : edSelected;
+  
+  // Außenwand nicht überschreibbar
+  if(r===0||r===ED_SIZE-1||c===0||c===ED_SIZE-1) return;
+
+  if(v==='S'){
+    edSpawn={r,c}; edDraw(); return;
+  }
+  if(v==='E'){
+    // Toggle: Zombie hinzufügen oder entfernen
+    const idx=edEnemies.findIndex(e2=>e2.r===r&&e2.c===c);
+    if(idx>=0) edEnemies.splice(idx,1); else edEnemies.push({r,c,t:0});
+    edDraw(); return;
+  }
+  if(v==='B'){
+    const idx=edEnemies.findIndex(e2=>e2.r===r&&e2.c===c);
+    if(idx>=0) edEnemies.splice(idx,1); else edEnemies.push({r,c,t:0,boss:true});
+    edDraw(); return;
+  }
+  if(v==='C'||v==='A'){
+    const idx=edPickups.findIndex(p=>p.r===r&&p.c===c);
+    if(idx>=0) edPickups.splice(idx,1); else edPickups.push({r,c,t:v==='C'?'c':'a'});
+    edDraw(); return;
+  }
+  edGrid[r][c]=typeof v==='number'?v:0;
+  edDraw();
+  updateEdInfo();
+}
+
+function edDraw(){
+  const ec=edCtx, S=ED_CELL;
+  ec.clearRect(0,0,edCanvas.width,edCanvas.height);
+  
+  for(let r=0;r<ED_SIZE;r++){
+    for(let c=0;c<ED_SIZE;c++){
+      const v=edGrid[r][c];
+      // Hintergrund
+      ec.fillStyle=v===0?'#1a1a2e':v===1?'#993322':v===2?'#224488':v===4?'#6B4E37':v===9?'#185a28':'#333';
+      ec.fillRect(c*S,r*S,S-1,S-1);
+      // Tile-Beschriftung
+      if(v===9){ ec.fillStyle='#0f0'; ec.font='bold 7px sans-serif'; ec.textAlign='center'; ec.textBaseline='middle'; ec.fillText('EXIT',c*S+S/2,r*S+S/2); }
+      if(v===4){ ec.fillStyle='#ddd'; ec.font='bold 6px sans-serif'; ec.textAlign='center'; ec.textBaseline='middle'; ec.fillText('TÜR',c*S+S/2,r*S+S/2); }
+    }
+  }
+  
+  // Grid-Linien
+  ec.strokeStyle='rgba(255,255,255,0.05)'; ec.lineWidth=0.5;
+  for(let i=0;i<=ED_SIZE;i++){
+    ec.beginPath(); ec.moveTo(i*S,0); ec.lineTo(i*S,ED_SIZE*S); ec.stroke();
+    ec.beginPath(); ec.moveTo(0,i*S); ec.lineTo(ED_SIZE*S,i*S); ec.stroke();
+  }
+  
+  // Spawn
+  ec.fillStyle='#4af'; ec.font='bold 12px sans-serif'; ec.textAlign='center'; ec.textBaseline='middle';
+  ec.fillText('★',edSpawn.c*S+S/2,edSpawn.r*S+S/2);
+  
+  // Enemies
+  edEnemies.forEach(e=>{
+    ec.fillStyle=e.boss?'#FFD700':'#f80';
+    ec.font='bold '+(e.boss?'11':'10')+'px sans-serif'; ec.textAlign='center'; ec.textBaseline='middle';
+    ec.fillText(e.boss?'👑':'Z',e.c*S+S/2,e.r*S+S/2);
+  });
+  
+  // Pickups
+  edPickups.forEach(p=>{
+    ec.font='10px sans-serif'; ec.textAlign='center'; ec.textBaseline='middle';
+    ec.fillText(p.t==='c'?'☕':'📦',p.c*S+S/2,p.r*S+S/2);
+  });
+  
+  // Cursor-Highlight: aktuell gewähltes Tile markieren
+  ec.strokeStyle='rgba(240,160,32,0.5)'; ec.lineWidth=1.5;
+  ec.strokeRect(0,0,ED_SIZE*S,ED_SIZE*S);
+}
+
+function updateEdInfo(){
+  const walls=edGrid.flat().filter(v=>v===1).length;
+  const exits=edGrid.flat().filter(v=>v===9).length;
+  document.getElementById('edInfo').innerHTML=
+    `Wände: ${walls}<br>Türen: ${edGrid.flat().filter(v=>v===4).length}<br>`+
+    `Zombies: ${edEnemies.length}<br>Pickups: ${edPickups.length}<br>`+
+    `Exit: ${exits===1?'✅':'❌ (1 nötig)'}`;
+}
+
+function editorClear(){
+  edGrid=[];
+  for(let r=0;r<ED_SIZE;r++){
+    edGrid.push([]);
+    for(let c=0;c<ED_SIZE;c++)
+      edGrid[r].push(r===0||r===ED_SIZE-1||c===0||c===ED_SIZE-1?1:0);
+  }
+  edSpawn={r:1,c:1}; edEnemies=[]; edPickups=[];
+  if(edCtx) edDraw();
+  updateEdInfo();
+}
+
+function editorPlay(){
+  // Exit-Check
+  const hasExit=edGrid.flat().some(v=>v===9);
+  if(!hasExit){ alert('⚠️ Kein Exit-Tile (9) gesetzt! Füge einen grünen EXIT-Tile ein.'); return; }
+  if(edEnemies.length===0){ alert('⚠️ Keine Zombies! Füge mindestens einen Zombie ein.'); return; }
+  
+  // Level aus Editor-Daten bauen
+  const lvlName = document.getElementById('edLvlName').value||'Custom Level';
+  const wR=+document.getElementById('edWR').value, wG=+document.getElementById('edWG').value, wB=+document.getElementById('edWB').value;
+  
+  // Exit-Position finden
+  let exitX=17.5, exitY=18.5;
+  outer: for(let r=0;r<ED_SIZE;r++) for(let c=0;c<ED_SIZE;c++) if(edGrid[r][c]===9){ exitX=c+0.5; exitY=r+0.5; break outer; }
+  
+  const customLvl={
+    name: lvlName,
+    map:  edGrid.map(row=>[...row]),
+    ps:   {x:edSpawn.c+0.5, y:edSpawn.r+0.5, a:0},
+    exit: {x:exitX, y:exitY},
+    enemies: edEnemies.map(e=>({x:e.c+0.5, y:e.r+0.5, t:e.t||0, boss:e.boss||false, hp:e.boss?6:2})),
+    pkups:   edPickups.map(p=>({x:p.c+0.5, y:p.r+0.5, t:p.t})),
+    wc:[wR,wG,wB], fc:[30,40,60], cc:[190,190,210],
+  };
+  
+  // Temporär als aktuelles Level laden
+  MAPS.push(customLvl);
+  lvlIdx = MAPS.length-1;
+  loadLvl(lvlIdx);
+  showScreen(''); gs='playing';
+  if(raf) cancelAnimationFrame(raf);
+  lastT=performance.now(); loop(lastT);
+  msg('🔧 Custom-Level gestartet! ESC = Zurück zum Editor');
+}
+
+function editorCopy(){
+  const lvlName = document.getElementById('edLvlName').value||'Mein Level';
+  const wR=document.getElementById('edWR').value, wG=document.getElementById('edWG').value, wB=document.getElementById('edWB').value;
+  let exitX=17.5, exitY=18.5;
+  outer2: for(let r=0;r<ED_SIZE;r++) for(let c=0;c<ED_SIZE;c++) if(edGrid[r][c]===9){ exitX=c+0.5; exitY=r+0.5; break outer2; }
+  const NL='\n';
+  const mapStr = edGrid.map(function(row){ return '      ['+row.join(',')+']'; }).join(','+NL);
+  const enStr  = edEnemies.map(function(e){ return '{x:'+(e.c+0.5)+',y:'+(e.r+0.5)+',t:0'+(e.boss?',boss:true,hp:6':'')+'}'; }).join(',');
+  const pkStr  = edPickups.map(function(p){ return "{x:"+(p.c+0.5)+",y:"+(p.r+0.5)+",t:'"+p.t+"'}"; }).join(',');
+  const output = '  { name:"'+lvlName+'",'+NL+
+    '    map:['+NL+mapStr+NL+'    ],'+NL+
+    '    ps:{x:'+(edSpawn.c+0.5)+',y:'+(edSpawn.r+0.5)+',a:0}, exit:{x:'+exitX+',y:'+exitY+'},'+NL+
+    '    enemies:['+enStr+'],'+NL+
+    '    pkups:['+pkStr+'],'+NL+
+    '    wc:['+wR+','+wG+','+wB+'], fc:[30,40,60], cc:[190,190,210] },';
+  navigator.clipboard.writeText(output).then(function(){
+    document.getElementById('edInfo').innerHTML='<span style="color:#3fb950">Kopiert!</span>';
+    setTimeout(updateEdInfo,2000);
+  }).catch(function(){ prompt('Level-Code:', output); });
+}
+
+// ─── Start ─────────────────────────────────────────────────────
+// Editor-Button sichtbar machen falls bereits freigeschaltet
+if(localStorage.getItem('officeDoomEditorUnlocked')==='1')
+  setTimeout(()=>document.getElementById('editorBtn').style.display='block',100);
+
+initTex(); initSprites(); showScreen('sMenu'); requestAnimationFrame(loop);
 </script>
 </body>
 </html>
