@@ -2,12 +2,100 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>☕ OFFICE DOOM</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0D1117">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#0D1117;color:#E6EDF3;font-family:'Segoe UI',system-ui,sans-serif;overflow:hidden;height:100vh;display:flex;flex-direction:column}
-header{background:#161B22;border-bottom:1px solid #30363D;padding:7px 20px;display:flex;align-items:center;gap:12px;flex-shrink:0;z-index:30}
+html{touch-action:none;overflow:hidden;height:100%}
+body{background:#0D1117;color:#E6EDF3;font-family:'Segoe UI',system-ui,sans-serif;overflow:hidden;height:100vh;display:flex;flex-direction:column;touch-action:none;user-select:none;-webkit-user-select:none}
+
+/* ── Virtual Gamepad ─────────────────────────────── */
+#gamepad{
+  position:absolute;inset:0;pointer-events:none;z-index:12;
+  display:none; /* wird per JS bei Touch aktiviert */
+}
+/* Linker Joystick-Bereich */
+#gpLeft{
+  position:absolute;bottom:22px;left:18px;
+  width:160px;height:160px;
+  pointer-events:all;
+}
+.gp-ring{
+  position:absolute;inset:0;border-radius:50%;
+  border:2px solid rgba(255,255,255,0.14);
+  background:rgba(0,0,0,0.28);
+  backdrop-filter:blur(4px);
+}
+#gpStick{
+  position:absolute;
+  width:58px;height:58px;
+  border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,rgba(255,255,255,0.32),rgba(220,100,20,0.55));
+  border:2px solid rgba(255,200,80,0.5);
+  box-shadow:0 2px 12px rgba(0,0,0,0.55);
+  top:51px;left:51px; /* zentriert in 160px Ring */
+  transform:translate(0,0);
+  transition:none;
+}
+/* Rechte Buttons */
+#gpRight{
+  position:absolute;bottom:22px;right:18px;
+  width:170px;height:170px;
+  pointer-events:all;
+}
+.gp-btn{
+  position:absolute;
+  width:54px;height:54px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.3rem;font-weight:700;
+  background:rgba(0,0,0,0.38);
+  border:2px solid rgba(255,255,255,0.18);
+  backdrop-filter:blur(4px);
+  color:rgba(255,255,255,0.85);
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  transition:background 0.08s,transform 0.08s;
+  pointer-events:all;
+  touch-action:none;
+}
+.gp-btn:active,.gp-btn.pressed{
+  background:rgba(220,100,20,0.65);
+  border-color:rgba(255,200,80,0.8);
+  transform:scale(0.92);
+}
+/* Obere Dreh-Buttons */
+#gpTurnLeft{
+  position:absolute;bottom:22px;left:190px;
+  pointer-events:all;
+}
+#gpTurnRight{
+  position:absolute;bottom:22px;right:200px;
+  pointer-events:all;
+}
+.gp-turn{
+  width:50px;height:50px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.4rem;
+  background:rgba(0,0,0,0.35);
+  border:2px solid rgba(255,255,255,0.14);
+  backdrop-filter:blur(4px);
+  color:rgba(255,255,255,0.75);
+  cursor:pointer;
+  pointer-events:all;
+  -webkit-tap-highlight-color:transparent;
+  touch-action:none;
+}
+.gp-turn:active,.gp-turn.pressed{background:rgba(80,140,220,0.5);border-color:#4af;}
+/* Fire-Button */
+#gpFire{bottom:58px;right:20px;}
+/* Interact-Button */
+#gpInteract{bottom:58px;right:84px;}
+/* Minimap-Button */
+#gpMap{top:14px;right:14px;width:42px;height:42px;font-size:1rem;border-radius:8px;}
+header{background:#161B22;border-bottom:1px solid #30363D;padding:7px 12px;display:flex;align-items:center;gap:8px;flex-shrink:0;z-index:30}
 .logo{font-size:1.3rem}
 .title{font-size:1rem;font-weight:700;color:#F0A020;letter-spacing:2px}
 .badge{margin-left:auto;background:#DC6414;color:white;padding:2px 10px;border-radius:20px;font-size:0.7rem;font-weight:600}
@@ -21,7 +109,7 @@ header{background:#161B22;border-bottom:1px solid #30363D;padding:7px 20px;displ
 .screen.hidden{display:none}
 .screen h1{font-size:clamp(1.8rem,5vw,3.5rem);font-weight:900;background:linear-gradient(135deg,#F0A020,#DC6414);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:3px}
 .screen p{color:#8B949E;font-size:0.9rem;text-align:center;max-width:400px;line-height:1.6}
-.btn{background:linear-gradient(135deg,#DC6414,#F0A020);color:white;border:none;padding:12px 36px;border-radius:8px;font-size:1rem;font-weight:700;cursor:pointer;letter-spacing:1px;transition:transform 0.1s;margin:4px}
+.btn{background:linear-gradient(135deg,#DC6414,#F0A020);color:white;border:none;padding:14px 32px;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;letter-spacing:1px;transition:transform 0.1s;margin:5px;min-height:48px;touch-action:manipulation}
 .btn:hover{transform:scale(1.05)}
 .btn.sec{background:#21262D;border:1px solid #30363D;color:#8B949E}
 #cross{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:22px;height:22px;pointer-events:none;z-index:5}
@@ -41,7 +129,7 @@ header{background:#161B22;border-bottom:1px solid #30363D;padding:7px 20px;displ
 input[type=range]{accent-color:#DC6414;width:120px}
 </style>
 </head>
-<body>
+<body style="-webkit-overflow-scrolling:touch">
 <header>
   <span class="logo">☕</span>
   <span class="title">OFFICE DOOM</span>
@@ -61,6 +149,40 @@ input[type=range]{accent-color:#DC6414;width:120px}
   <div id="hitflash"></div>
   <div id="msg"></div>
   <div id="debug"></div>
+
+  <!-- Virtual Gamepad (Touch) -->
+  <div id="gamepad">
+    <!-- Linker Joystick -->
+    <div id="gpLeft">
+      <div class="gp-ring"></div>
+      <div id="gpStick"></div>
+    </div>
+
+    <!-- Dreh-Pfeile: mittig am unteren Rand -->
+    <div id="gpTurnLeft"  style="position:absolute;bottom:30px;left:190px;pointer-events:all">
+      <div class="gp-turn" id="btnTL" style="background:rgba(40,80,160,0.38);border-color:rgba(80,140,255,0.4)">◀</div>
+    </div>
+    <div id="gpTurnRight" style="position:absolute;bottom:30px;right:205px;pointer-events:all">
+      <div class="gp-turn" id="btnTR" style="background:rgba(40,80,160,0.38);border-color:rgba(80,140,255,0.4)">▶</div>
+    </div>
+
+    <!-- Rechte Action-Buttons -->
+    <div id="gpRight" style="position:absolute;bottom:22px;right:18px;width:170px;height:170px;pointer-events:none">
+      <!-- ☕ Schießen – rechts unten -->
+      <div class="gp-btn" id="gpFire"
+           style="position:absolute;bottom:0;right:0;
+                  background:radial-gradient(circle at 35% 35%,rgba(255,160,30,0.5),rgba(180,60,0,0.6));
+                  border-color:rgba(255,180,60,0.7);font-size:1.6rem">☕</div>
+      <!-- 🚪 Interact – links davon -->
+      <div class="gp-btn" id="gpInteract"
+           style="position:absolute;bottom:0;right:68px;
+                  font-size:1.3rem">🚪</div>
+      <!-- 🗺 Minimap – oben rechts, kleiner -->
+      <div class="gp-btn" id="gpMap"
+           style="position:absolute;top:0;right:0;
+                  width:42px;height:42px;font-size:0.9rem;border-radius:10px">🗺</div>
+    </div>
+  </div>
 
   <!-- MENÜ -->
   <div class="screen" id="sMenu">
@@ -1120,6 +1242,7 @@ function updateDebug(dt){
 
 // ─── Update ────────────────────────────────────────────────────
 function update(dt){
+  applyGamepad(dt);
   const cosA=Math.cos(player.a), sinA=Math.sin(player.a);
   const spd=3.0*dt, rotSpd=2.1*dt;
 
@@ -1276,6 +1399,133 @@ document.addEventListener('mousemove',e=>{
   player.a+=e.movementX*0.002;
 });
 
+// ─── Virtual Gamepad (Touch) ──────────────────────────────────
+const GP = {
+  // Joystick-State (normalisiert -1..1)
+  jx:0, jy:0,
+  // Button-States
+  fire:false, interact:false,
+  turnL:false, turnR:false,
+};
+
+let isTouch = false;
+
+function detectTouch(){
+  if(isTouch) return;
+  isTouch = true;
+  document.getElementById('gamepad').style.display = 'block';
+  // Minimap auf mobile nach oben links verschieben damit Gamepad Platz hat
+  document.getElementById('minimap').style.bottom  = '200px';
+  document.getElementById('minimap').style.right   = '14px';
+}
+
+// ── Joystick ────────────────────────────────────────────────
+(function initJoystick(){
+  const area  = document.getElementById('gpLeft');
+  const stick = document.getElementById('gpStick');
+  const R = 80;   // Ring-Radius
+  const SR = 29;  // Stick-Radius
+  let active = false, startX=0, startY=0;
+
+  function getPos(e){
+    const t = e.touches ? e.touches[0] : e;
+    return { x: t.clientX, y: t.clientY };
+  }
+
+  function onStart(e){
+    e.preventDefault(); detectTouch();
+    active = true;
+    const rect = area.getBoundingClientRect();
+    startX = rect.left + R;
+    startY = rect.top  + R;
+    onMove(e);
+  }
+
+  function onMove(e){
+    if(!active) return;
+    e.preventDefault();
+    const p = getPos(e);
+    let dx = p.x - startX;
+    let dy = p.y - startY;
+    const dist = Math.hypot(dx, dy);
+    const maxD = R - SR;
+    if(dist > maxD){ dx = dx/dist*maxD; dy = dy/dist*maxD; }
+    // Stick visuell verschieben
+    stick.style.transform = 'translate('+dx+'px,'+dy+'px)';
+    // Normalisieren
+    GP.jx = dx / maxD;
+    GP.jy = dy / maxD;
+  }
+
+  function onEnd(e){
+    e.preventDefault();
+    active = false;
+    stick.style.transform = 'translate(0,0)';
+    GP.jx = 0; GP.jy = 0;
+  }
+
+  area.addEventListener('touchstart',  onStart, {passive:false});
+  area.addEventListener('touchmove',   onMove,  {passive:false});
+  area.addEventListener('touchend',    onEnd,   {passive:false});
+  area.addEventListener('touchcancel', onEnd,   {passive:false});
+})();
+
+// ── Action Buttons ──────────────────────────────────────────
+function gpBtn(id, onDown, onUp){
+  const el = document.getElementById(id);
+  if(!el) return;
+  function dn(e){ e.preventDefault(); detectTouch(); el.classList.add('pressed'); if(onDown) onDown(); }
+  function up(e){ e.preventDefault(); el.classList.remove('pressed'); if(onUp) onUp(); }
+  el.addEventListener('touchstart',  dn, {passive:false});
+  el.addEventListener('touchend',    up, {passive:false});
+  el.addEventListener('touchcancel', up, {passive:false});
+  // Maus-Fallback
+  el.addEventListener('mousedown', dn);
+  el.addEventListener('mouseup',   up);
+}
+
+gpBtn('gpFire',
+  function(){ if(gs==='playing') attack(); },
+  null
+);
+gpBtn('gpInteract',
+  function(){ if(gs==='playing') interactDoor(); },
+  null
+);
+gpBtn('gpMap',
+  function(){ showMM=!showMM; },
+  null
+);
+gpBtn('btnTL',
+  function(){ GP.turnL=true; },
+  function(){ GP.turnL=false; }
+);
+gpBtn('btnTR',
+  function(){ GP.turnR=true; },
+  function(){ GP.turnR=false; }
+);
+
+// ── Gamepad in Update-Loop einbinden ────────────────────────
+// (wird am Anfang von update(dt) aufgerufen)
+function applyGamepad(dt){
+  if(!isTouch && !GP.fire && !GP.turnL && !GP.turnR && GP.jx===0 && GP.jy===0) return;
+  const spd    = 3.0*dt;
+  const rotSpd = 2.1*dt;
+  const cosA = Math.cos(player.a);
+  const sinA = Math.sin(player.a);
+  // Drehen (Turn-Buttons ODER Joystick X)
+  const turnVal = GP.turnL ? -1 : GP.turnR ? 1 : (Math.abs(GP.jx)>0.15 ? GP.jx : 0);
+  player.a += turnVal * rotSpd * 2.2;
+  // Vorwärts/Rückwärts (Joystick Y)
+  if(Math.abs(GP.jy) > 0.12){
+    const mv = -GP.jy * spd * 1.15;
+    const nx = player.x + cosA*mv;
+    const ny = player.y + sinA*mv;
+    if(!isWall(nx+Math.sign(nx-player.x)*0.28, player.y)) player.x=nx;
+    if(!isWall(player.x, ny+Math.sign(ny-player.y)*0.28)) player.y=ny;
+  }
+}
+
 // ─── Input ─────────────────────────────────────────────────────
 document.addEventListener('keydown',e=>{
   keys[e.key]=true;
@@ -1294,9 +1544,35 @@ document.addEventListener('keyup',e=>{ keys[e.key]=false; });
 // Klick: Pointer Lock aktivieren ODER angreifen
 cv.addEventListener('click',()=>{
   if(gs!=='playing') return;
+  if(isTouch) return; // Touch: kein Pointer-Lock
   if(!document.pointerLockElement){ cv.requestPointerLock(); }
   else{ attack(); }
 });
+
+// Touch-Look: horizontales Wischen auf dem Canvas dreht die Kamera
+(function initTouchLook(){
+  let lx=0, active=false;
+  cv.addEventListener('touchstart',function(e){
+    detectTouch();
+    if(e.touches.length!==1) return;
+    // Nur wenn nicht im Joystick-Bereich
+    const t=e.touches[0];
+    const gp=document.getElementById('gpLeft').getBoundingClientRect();
+    const gpR=document.getElementById('gpRight').getBoundingClientRect();
+    if(t.clientX>gp.left&&t.clientX<gp.right&&t.clientY>gp.top&&t.clientY<gp.bottom) return;
+    if(t.clientX>gpR.left&&t.clientX<gpR.right&&t.clientY>gpR.top&&t.clientY<gpR.bottom) return;
+    lx=t.clientX; active=true;
+    e.preventDefault();
+  },{passive:false});
+  cv.addEventListener('touchmove',function(e){
+    if(!active||gs!=='playing') return;
+    e.preventDefault();
+    const t=e.touches[0];
+    const dx=t.clientX-lx; lx=t.clientX;
+    player.a += dx*0.006;
+  },{passive:false});
+  cv.addEventListener('touchend',function(){ active=false; },{passive:false});
+})();
 
 function attack(){
   if(player.ammo<=0){ msg('Kein Kaffee mehr! ☕'); return; }
@@ -1436,6 +1712,7 @@ function startNextLvl(){
 function startLvl(i){
   loadLvl(i);
   showScreen(''); gs='playing';
+  if(isTouch) document.getElementById('gamepad').style.display='block';
   if(raf) cancelAnimationFrame(raf);
   lastT = performance.now();
   loop(lastT);
@@ -1470,6 +1747,13 @@ function resume(){ gs='playing'; showScreen(''); }
 function showScreen(id){
   ['sMenu','sCtrl','sSettings','sPause','sDead','sWin','sFin','sStory','sEditor'].forEach(s=>
     document.getElementById(s).classList.toggle('hidden',s!==id));
+  // Gamepad nur beim Spielen zeigen
+  if(isTouch){
+    const gpEl = document.getElementById('gamepad');
+    gpEl.style.display = (id===''&&gs==='playing') ? 'block' : 'none';
+    // Wenn Spiel läuft und kein Overlay → Gamepad an
+    if(id==='' && gs==='playing') gpEl.style.display='block';
+  }
 }
 
 // ─── Geheimcode-Eingabe ────────────────────────────────────────
