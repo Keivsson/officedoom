@@ -81,15 +81,16 @@ body{
   -webkit-tap-highlight-color:transparent;touch-action:none;
 }
 .gp-turn.pressed{background:rgba(80,140,220,0.7);border-color:#4af;transform:scale(0.9)}
-/* Action-Buttons rechts */
+/* Action-Buttons rechts – simpel: nur Interact + Map übereinander */
 #gpRight{
   position:absolute;
   bottom:var(--gp-bot);
   right:calc(var(--gp-pad) + var(--safe-r));
-  width:calc(var(--gp-btn)*2 + 10px);
-  height:calc(var(--gp-btn)*2 + 10px);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:10px;
   pointer-events:none;
-  display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:8px;
 }
 .gp-btn{
   width:var(--gp-btn);height:var(--gp-btn);border-radius:50%;
@@ -101,17 +102,46 @@ body{
   -webkit-tap-highlight-color:transparent;touch-action:none;pointer-events:all;
 }
 .gp-btn.pressed{background:rgba(220,100,20,0.7);border-color:rgba(255,200,80,0.9);transform:scale(0.9)}
-#gpFire{
-  grid-column:2;grid-row:2;
-  background:radial-gradient(circle at 32% 32%,rgba(255,160,30,0.55),rgba(180,60,0,0.65));
-  border-color:rgba(255,180,60,0.8);font-size:calc(var(--gp-fnt)*1.25);
-}
-#gpInteract{grid-column:1;grid-row:2}
+#gpInteract{ /* Tür öffnen – großer Button */ }
 #gpMap{
-  grid-column:2;grid-row:1;
-  width:calc(var(--gp-btn)*0.7);height:calc(var(--gp-btn)*0.7);
+  width:calc(var(--gp-btn)*0.72);height:calc(var(--gp-btn)*0.72);
   border-radius:10px;font-size:calc(var(--gp-fnt)*0.78);
-  justify-self:end;align-self:start;
+}
+/* Tap-to-Fire Overlay – rechte Bildschirmhälfte */
+#gpFireZone{
+  position:absolute;
+  top:0; right:0;
+  width:50%; height:100%;
+  pointer-events:all;
+  /* Unsichtbar, aber tappable */
+  background:transparent;
+  z-index:11; /* unter Gamepad-Buttons */
+}
+/* Kurzes visuelles Feedback beim Tippen */
+#gpFireFlash{
+  position:absolute;inset:0;
+  background:rgba(255,160,30,0);
+  pointer-events:none;
+  transition:background 0.12s;
+  z-index:11;
+}
+#gpFireFlash.flash{ background:rgba(255,160,30,0.15); }
+/* Tap-to-Fire Hinweis-Label auf rechter Seite */
+#gpFireHint{
+  position:absolute;
+  top:50%; right:12px;
+  transform:translateY(-50%);
+  font-size:clamp(1.8rem,5vmin,2.8rem);
+  opacity:0.18;
+  pointer-events:none;
+  z-index:11;
+  display:none;
+  text-shadow:0 0 12px rgba(255,160,30,0.5);
+  animation:hint-pulse 2s ease-in-out infinite;
+}
+@keyframes hint-pulse{
+  0%,100%{opacity:0.18}
+  50%{opacity:0.30}
 }
 /* Auto-Einblenden auf Touch-Geräten (iPad, iPhone, Android) */
 @media (hover:none) and (pointer:coarse){
@@ -199,13 +229,16 @@ input[type=range]{accent-color:#DC6414;width:120px}
     <div id="gpTurnLeft"><div class="gp-turn" id="btnTL">◀</div></div>
     <div id="gpTurnRight"><div class="gp-turn" id="btnTR">▶</div></div>
 
-    <!-- ③ Action-Buttons rechts (Grid-Layout via CSS) -->
+    <!-- ③ Action-Buttons rechts – nur Interact + Map -->
     <div id="gpRight">
-      <div class="gp-btn" id="gpMap">🗺</div>
-      <div style="width:var(--gp-btn);height:var(--gp-btn)"></div><!-- Leerplatz oben-links -->
       <div class="gp-btn" id="gpInteract">🚪</div>
-      <div class="gp-btn" id="gpFire">☕</div>
+      <div class="gp-btn" id="gpMap">🗺</div>
     </div>
+    <!-- Tap-to-Fire: rechte Bildschirmhälfte tippen = schießen -->
+    <div id="gpFireZone"></div>
+    <div id="gpFireFlash"></div>
+    <!-- Hinweis auf Touch-Geräten -->
+    <div id="gpFireHint">☕</div>
   </div>
 
   <!-- MENÜ -->
@@ -247,15 +280,39 @@ input[type=range]{accent-color:#DC6414;width:120px}
   <!-- EINSTELLUNGEN -->
   <div class="screen hidden" id="sSettings">
     <h1 style="font-size:1.8rem">EINSTELLUNGEN</h1>
+
+    <!-- Bild -->
+    <div style="color:#DC6414;font-size:0.72rem;letter-spacing:2px;margin:8px 0 2px;align-self:flex-start;margin-left:10px">BILD</div>
     <div class="settings-row"><label>FOV</label><input type="range" id="sFov" min="50" max="100" value="60" oninput="setFov(+this.value)"><span id="sFovVal">60°</span></div>
-    <div class="settings-row"><label>Render-Scale</label>
+    <div class="settings-row"><label>Render-Qualität</label>
       <select id="sScale" onchange="setScale(+this.value)" style="background:#21262D;color:#aaa;border:1px solid #30363D;padding:4px 8px;border-radius:6px">
+        <option value="0.4">Sehr Low (0.4×)</option>
         <option value="0.5">Low (0.5×)</option>
         <option value="0.75" selected>Medium (0.75×)</option>
         <option value="1">High (1×)</option>
       </select>
     </div>
+
+    <!-- Steuerung / Ansicht -->
+    <div style="color:#DC6414;font-size:0.72rem;letter-spacing:2px;margin:10px 0 2px;align-self:flex-start;margin-left:10px">STEUERUNG &amp; ANSICHT</div>
+    <div class="settings-row">
+      <label>UI-Zoom</label>
+      <input type="range" id="sZoom" min="60" max="100" value="100" step="5"
+        oninput="setUIZoom(+this.value)">
+      <span id="sZoomVal">100%</span>
+    </div>
+    <div class="settings-row">
+      <label>Gamepad-Größe</label>
+      <input type="range" id="sGPSize" min="60" max="130" value="100" step="5"
+        oninput="setGPSize(+this.value)">
+      <span id="sGPSizeVal">100%</span>
+    </div>
+
+    <!-- Audio -->
+    <div style="color:#DC6414;font-size:0.72rem;letter-spacing:2px;margin:10px 0 2px;align-self:flex-start;margin-left:10px">AUDIO</div>
     <div class="settings-row"><label>Lautstärke</label><input type="range" id="sVol" min="0" max="1" step="0.05" value="0.35" oninput="setVol(+this.value)"><span id="sVolVal">35%</span></div>
+
+    <p style="font-size:0.72rem;color:#484F58;margin-top:6px">💡 Tipp: UI-Zoom rauszoomen damit das Gamepad sichtbar wird</p>
     <button class="btn" onclick="showScreen('sMenu')">← ZURÜCK</button>
   </div>
 
@@ -395,10 +452,9 @@ function createOffscreen(){
 
 function resize(){
   const area = document.getElementById('gameArea');
-  // Nutze getBoundingClientRect für exakte Werte auch auf iOS Safari
-  const rect = area.getBoundingClientRect();
-  DW = Math.max(160, rect.width  | 0);
-  DH = Math.max(100, rect.height | 0);
+  // clientWidth/Height: unscalierter Wert (korrekt auch bei CSS transform:scale)
+  DW = Math.max(160, area.clientWidth  | 0);
+  DH = Math.max(100, area.clientHeight | 0);
   cv.width  = DW; cv.height  = DH;
   cv.style.width  = '100%'; cv.style.height = '100%';
   cv.style.position = 'absolute';
@@ -450,6 +506,51 @@ function playTone(freq, type, dur, vol=masterVol, decay=0.4){
 }
 
 function setVol(v){ masterVol=v; document.getElementById('sVolVal').textContent=Math.round(v*100)+'%'; }
+
+function setUIZoom(pct){
+  document.getElementById('sZoomVal').textContent=pct+'%';
+  // CSS zoom auf gameArea + Header (zoomt das komplette Spiel raus)
+  const factor = pct/100;
+  document.getElementById('gameArea').style.transformOrigin='top center';
+  document.getElementById('gameArea').style.transform='scale('+factor+')';
+  // Bei Zoom < 1: gameArea braucht mehr Platz
+  document.getElementById('gameArea').style.height = Math.round(100/factor)+'%';
+  // Canvas neu rendern
+  setTimeout(resize, 50);
+  // Wert speichern
+  try{ localStorage.setItem('odUIZoom', pct); }catch(e){}
+}
+
+function setGPSize(pct){
+  document.getElementById('sGPSizeVal').textContent=pct+'%';
+  const factor = pct/100;
+  // CSS Custom Property überschreiben
+  const base_ring = 16; // vmin
+  const base_btn  = 6.5; // vmin
+  document.documentElement.style.setProperty('--gp-ring',
+    'clamp(80px,'+(base_ring*factor).toFixed(1)+'vmin,'+(165*factor).toFixed(0)+'px)');
+  document.documentElement.style.setProperty('--gp-btn',
+    'clamp(36px,'+(base_btn*factor).toFixed(1)+'vmin,'+(66*factor).toFixed(0)+'px)');
+  try{ localStorage.setItem('odGPSize', pct); }catch(e){}
+}
+
+// Gespeicherte Einstellungen beim Start laden
+(function loadSettings(){
+  try{
+    const zoom = localStorage.getItem('odUIZoom');
+    const gps  = localStorage.getItem('odGPSize');
+    if(zoom){
+      const el=document.getElementById('sZoom');
+      if(el) el.value=zoom;
+      setUIZoom(+zoom);
+    }
+    if(gps){
+      const el=document.getElementById('sGPSize');
+      if(el) el.value=gps;
+      setGPSize(+gps);
+    }
+  }catch(e){}
+})();
 function setFov(v){
   FOV = v*(Math.PI/180);
   document.getElementById('sFovVal').textContent=v+'°';
@@ -1473,11 +1574,25 @@ function detectTouch(){
 
 function applyTouchUI(){
   document.getElementById('gamepad').style.display='block';
+  // FireZone aktivieren
+  const fz=document.getElementById('gpFireZone');
+  if(fz) fz.style.display='block';
+  const fh=document.getElementById('gpFireHint');
+  if(fh && !localStorage.getItem('odFiredOnce')) fh.style.display='block';
   // Minimap auf Touch kompakter
   const mm = document.getElementById('minimap');
   const sz = Math.min(90, Math.floor(Math.min(window.innerWidth, window.innerHeight) * 0.2));
-  mm.width  = sz; mm.height = sz;
-  mm.style.width = sz+'px'; mm.style.height = sz+'px';
+  mm.width=sz; mm.height=sz;
+  mm.style.width=sz+'px'; mm.style.height=sz+'px';
+  // Gespeicherte Einstellungen anwenden
+  setTimeout(function(){
+    try{
+      const zoom=localStorage.getItem('odUIZoom');
+      const gps=localStorage.getItem('odGPSize');
+      if(zoom){ const el=document.getElementById('sZoom'); if(el){ el.value=zoom; setUIZoom(+zoom); }}
+      if(gps){  const el=document.getElementById('sGPSize'); if(el){ el.value=gps; setGPSize(+gps); }}
+    }catch(e){}
+  }, 200);
 }
 
 // Beim Laden direkt anwenden wenn Touch erkannt
@@ -1535,10 +1650,7 @@ function gpBtn(id, onDown, onUp){
   el.addEventListener('mouseup',   up);
 }
 
-gpBtn('gpFire',
-  function(){ if(gs==='playing') attack(); },
-  null
-);
+// gpFire: jetzt per Tap-Zone (siehe initTapToFire)
 gpBtn('gpInteract',
   function(){ if(gs==='playing') interactDoor(); },
   null
@@ -1559,6 +1671,26 @@ gpBtn('btnTR',
   function(){ GP.turnR=true; },
   function(){ GP.turnR=false; }
 );
+
+// Tap-to-Fire Zone (als Backup für Canvas-Tap)
+(function(){
+  const zone = document.getElementById('gpFireZone');
+  const fl   = document.getElementById('gpFireFlash');
+  if(!zone) return;
+  var startX=0, startTime=0;
+  zone.addEventListener('touchstart',function(e){
+    e.preventDefault(); detectTouch();
+    startX=e.touches[0].clientX; startTime=Date.now();
+  },{passive:false});
+  zone.addEventListener('touchend',function(e){
+    e.preventDefault();
+    const dt=Date.now()-startTime;
+    if(dt<300 && gs==='playing'){  // kurzer Tap
+      attack();
+      if(fl){ fl.classList.add('flash'); setTimeout(function(){fl.classList.remove('flash');},120); }
+    }
+  },{passive:false});
+})();
 
 // ── Gamepad in Update-Loop einbinden ────────────────────────
 // (wird am Anfang von update(dt) aufgerufen)
@@ -1604,33 +1736,63 @@ cv.addEventListener('click',()=>{
   else{ attack(); }
 });
 
-// Touch-Look: horizontales Wischen auf dem Canvas dreht die Kamera
-(function initTouchLook(){
-  let lx=0, active=false;
+// Touch-Look: linke Bildschirmhälfte wischen = Kamera drehen
+// Tap-to-Fire: rechte Bildschirmhälfte tippen = schießen
+(function initTouchControls(){
+  let lx=0, ly=0, lookActive=false, moved=false;
+  const MOVE_THRESH = 8; // px – ab wann ist es ein Wischen vs Tippen
+
   cv.addEventListener('touchstart',function(e){
     detectTouch();
-    if(e.touches.length!==1) return;
-    // Nur wenn nicht im Joystick-Bereich
+    if(gs!=='playing') return;
     const t=e.touches[0];
-    const gp=document.getElementById('gpLeft').getBoundingClientRect();
+    // Gamepad-Bereiche ignorieren
+    const gpL=document.getElementById('gpLeft').getBoundingClientRect();
     const gpR=document.getElementById('gpRight').getBoundingClientRect();
-    if(t.clientX>gp.left&&t.clientX<gp.right&&t.clientY>gp.top&&t.clientY<gp.bottom) return;
-    if(t.clientX>gpR.left&&t.clientX<gpR.right&&t.clientY>gpR.top&&t.clientY<gpR.bottom) return;
-    lx=t.clientX; active=true;
+    const gpTL=document.getElementById('gpTurnLeft').getBoundingClientRect();
+    const gpTR=document.getElementById('gpTurnRight').getBoundingClientRect();
+    function inRect(r){ return t.clientX>=r.left&&t.clientX<=r.right&&t.clientY>=r.top&&t.clientY<=r.bottom; }
+    if(inRect(gpL)||inRect(gpR)||inRect(gpTL)||inRect(gpTR)) return;
+    lx=t.clientX; ly=t.clientY; lookActive=true; moved=false;
     e.preventDefault();
   },{passive:false});
+
   cv.addEventListener('touchmove',function(e){
-    if(!active||gs!=='playing') return;
+    if(!lookActive||gs!=='playing') return;
     e.preventDefault();
     const t=e.touches[0];
     const dx=t.clientX-lx; lx=t.clientX;
+    if(Math.abs(dx)>2) moved=true;
     player.a += dx*0.006;
   },{passive:false});
-  cv.addEventListener('touchend',function(){ active=false; },{passive:false});
+
+  cv.addEventListener('touchend',function(e){
+    if(!lookActive) return;
+    const wasTap = !moved;
+    lookActive=false; moved=false;
+    // Tap auf rechte Hälfte = Schießen
+    if(wasTap && gs==='playing'){
+      const rect=cv.getBoundingClientRect();
+      const midX=rect.left+rect.width*0.5;
+      // Alle beendeten Touches prüfen
+      const ct = e.changedTouches[0];
+      if(ct && ct.clientX > midX){
+        attack();
+        // Visuelles Flash
+        const fl=document.getElementById('gpFireFlash');
+        if(fl){ fl.classList.add('flash'); setTimeout(function(){fl.classList.remove('flash');},120); }
+      }
+    }
+  },{passive:false});
 })();
 
 function attack(){
   if(player.ammo<=0){ msg('Kein Kaffee mehr! ☕'); return; }
+  // Tap-to-Fire Hint nach erstem Schuss ausblenden
+  if(isTouch){
+    const fh=document.getElementById('gpFireHint');
+    if(fh){ fh.style.display='none'; try{localStorage.setItem('odFiredOnce','1');}catch(e){} }
+  }
   player.ammo--; wAnimT=1; updHUD(); sndShoot();
   projectiles.push({
     x:player.x+Math.cos(player.a)*0.4,
@@ -1766,7 +1928,14 @@ function startNextLvl(){
 
 function startLvl(i){
   loadLvl(i);
-  gs='playing'; showScreen('');  // showScreen prüft isTouch selbst
+  gs='playing'; showScreen('');
+  // Einmaliger Touch-Hinweis beim ersten Level
+  if(isTouch && i===0 && !localStorage.getItem('odTipShown')){
+    setTimeout(function(){
+      msg('👆 Rechts tippen = Schießen  |  Wischen = Drehen');
+      try{ localStorage.setItem('odTipShown','1'); }catch(e){}
+    }, 800);
+  }
   if(raf) cancelAnimationFrame(raf);
   lastT = performance.now();
   loop(lastT);
