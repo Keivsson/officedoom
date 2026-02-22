@@ -107,16 +107,7 @@ body{
   width:calc(var(--gp-btn)*0.72);height:calc(var(--gp-btn)*0.72);
   border-radius:10px;font-size:calc(var(--gp-fnt)*0.78);
 }
-/* Tap-to-Fire Overlay – rechte Bildschirmhälfte */
-#gpFireZone{
-  position:absolute;
-  top:0; right:0;
-  width:50%; height:100%;
-  pointer-events:all;
-  /* Unsichtbar, aber tappable */
-  background:transparent;
-  z-index:11; /* unter Gamepad-Buttons */
-}
+/* gpFireZone entfernt – Fire per Canvas-Hit-Test */
 /* Kurzes visuelles Feedback beim Tippen */
 #gpFireFlash{
   position:absolute;inset:0;
@@ -235,7 +226,7 @@ input[type=range]{accent-color:#DC6414;width:120px}
       <div class="gp-btn" id="gpMap">🗺</div>
     </div>
     <!-- Tap-to-Fire: rechte Bildschirmhälfte tippen = schießen -->
-    <div id="gpFireZone"></div>
+    <!-- gpFireZone entfernt –- Fire per Canvas-Hit-Test -->
     <div id="gpFireFlash"></div>
     <!-- Hinweis auf Touch-Geräten -->
     <div id="gpFireHint">☕</div>
@@ -967,6 +958,8 @@ let keys={}, lastT=0, raf=null, kills=0, showMM=false, showDebug=false;
 // Kaffeebecher-Position (0–100 %, gespeichert in localStorage)
 let weaponOffX = 0;   // prozentual: -50..+50 → links/rechts
 let weaponOffY = 0;   // prozentual: -50..+50 → hoch/runter
+// Waffen-Bounding-Box im Display-Canvas (Pixel), wird nach jedem Frame aktualisiert
+let weaponBounds = {x:0, y:0, w:0, h:0};
 let wAnimT=0;
 let projectiles=[];
 let particles=[];
@@ -1360,6 +1353,14 @@ function renderWeapon(){
   ctx.fillStyle='#f2f2f2'; ctx.fillRect(-bW*0.48,-bH*0.92,bW*1.04,7);
   ctx.restore();
 
+  // Bounding Box in Canvas-Pixel-Koordinaten (unabhängig von CSS-Skalierung)
+  weaponBounds = {
+    x: baseX - bW * 0.55,   // linker Rand des Bechers
+    y: baseY - bH * 1.10,   // oberer Rand (Dampf einschließen)
+    w: bW * 1.25,            // Breite inkl. Henkel
+    h: bH * 1.20             // Höhe inkl. Hand
+  };
+
   // Projektile
   const hFov2=FOV/2;
   projectiles.forEach(p=>{
@@ -1571,6 +1572,7 @@ function loop(now){
 
     // 3. Waffe direkt auf Display (volle Auflösung)
     renderWeapon();
+
     renderMinimap();
 
     // Debug
@@ -1621,9 +1623,6 @@ function detectTouch(){
 
 function applyTouchUI(){
   document.getElementById('gamepad').style.display='block';
-  // FireZone aktivieren
-  const fz=document.getElementById('gpFireZone');
-  if(fz) fz.style.display='block';
   const fh=document.getElementById('gpFireHint');
   if(fh && !localStorage.getItem('odFiredOnce')) fh.style.display='block';
   // Minimap auf Touch kompakter
@@ -1719,25 +1718,7 @@ gpBtn('btnTR',
   function(){ GP.turnR=false; }
 );
 
-// Tap-to-Fire Zone (als Backup für Canvas-Tap)
-(function(){
-  const zone = document.getElementById('gpFireZone');
-  const fl   = document.getElementById('gpFireFlash');
-  if(!zone) return;
-  var startX=0, startTime=0;
-  zone.addEventListener('touchstart',function(e){
-    e.preventDefault(); detectTouch();
-    startX=e.touches[0].clientX; startTime=Date.now();
-  },{passive:false});
-  zone.addEventListener('touchend',function(e){
-    e.preventDefault();
-    const dt=Date.now()-startTime;
-    if(dt<300 && gs==='playing'){  // kurzer Tap
-      attack();
-      if(fl){ fl.classList.add('flash'); setTimeout(function(){fl.classList.remove('flash');},120); }
-    }
-  },{passive:false});
-})();
+// gpFireZone-Handler entfernt
 
 // ── Gamepad in Update-Loop einbinden ────────────────────────
 // (wird am Anfang von update(dt) aufgerufen)
@@ -1817,17 +1798,21 @@ cv.addEventListener('click',()=>{
     if(!lookActive) return;
     const wasTap = !moved;
     lookActive=false; moved=false;
-    // Tap auf rechte Hälfte = Schießen
+    // Tap → Kaffeebecher-Hit-Test in Canvas-Koordinaten
     if(wasTap && gs==='playing'){
-      const rect=cv.getBoundingClientRect();
-      const midX=rect.left+rect.width*0.5;
-      // Alle beendeten Touches prüfen
       const ct = e.changedTouches[0];
-      if(ct && ct.clientX > midX){
-        attack();
-        // Visuelles Flash
-        const fl=document.getElementById('gpFireFlash');
-        if(fl){ fl.classList.add('flash'); setTimeout(function(){fl.classList.remove('flash');},120); }
+      if(ct && weaponBounds.w > 0){
+        // Touch-Position → Canvas-Pixel
+        const cvRect = cv.getBoundingClientRect();
+        const canvasX = (ct.clientX - cvRect.left) * (DW / cvRect.width);
+        const canvasY = (ct.clientY - cvRect.top)  * (DH / cvRect.height);
+        const wb = weaponBounds;
+        if(canvasX >= wb.x && canvasX <= wb.x + wb.w &&
+           canvasY >= wb.y && canvasY <= wb.y + wb.h){
+          attack();
+          const fl = document.getElementById('gpFireFlash');
+          if(fl){ fl.classList.add('flash'); setTimeout(function(){fl.classList.remove('flash');},120); }
+        }
       }
     }
   },{passive:false});
@@ -1979,7 +1964,7 @@ function startLvl(i){
   // Einmaliger Touch-Hinweis beim ersten Level
   if(isTouch && i===0 && !localStorage.getItem('odTipShown')){
     setTimeout(function(){
-      msg('👆 Rechts tippen = Schießen  |  Wischen = Drehen');
+      msg('👆 Auf den Kaffeebecher tippen = Schießen');
       try{ localStorage.setItem('odTipShown','1'); }catch(e){}
     }, 800);
   }
