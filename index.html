@@ -312,6 +312,23 @@ input[type=range]{accent-color:#DC6414;width:120px}
     <div style="color:#DC6414;font-size:0.72rem;letter-spacing:2px;margin:10px 0 2px;align-self:flex-start;margin-left:10px">AUDIO</div>
     <div class="settings-row"><label>Lautstärke</label><input type="range" id="sVol" min="0" max="1" step="0.05" value="0.35" oninput="setVol(+this.value)"><span id="sVolVal">35%</span></div>
 
+    <!-- Kaffeebecher-Position -->
+    <div style="color:#DC6414;font-size:0.72rem;letter-spacing:2px;margin:10px 0 2px;align-self:flex-start;margin-left:10px">KAFFEEBECHER-POSITION ☕</div>
+    <div class="settings-row">
+      <label>Links / Rechts</label>
+      <input type="range" id="sWpnX" min="-50" max="50" value="0" step="1"
+        oninput="setWeaponPos()">
+      <span id="sWpnXVal">Mitte</span>
+    </div>
+    <div class="settings-row">
+      <label>Hoch / Runter</label>
+      <input type="range" id="sWpnY" min="-40" max="60" value="0" step="1"
+        oninput="setWeaponPos()">
+      <span id="sWpnYVal">Standard</span>
+    </div>
+    <button class="btn sec" style="padding:6px 16px;font-size:0.8rem;margin:4px 0"
+      onclick="resetWeaponPos()">↺ Position zurücksetzen</button>
+
     <p style="font-size:0.72rem;color:#484F58;margin-top:6px">💡 Tipp: UI-Zoom rauszoomen damit das Gamepad sichtbar wird</p>
     <button class="btn" onclick="showScreen('sMenu')">← ZURÜCK</button>
   </div>
@@ -507,6 +524,38 @@ function playTone(freq, type, dur, vol=masterVol, decay=0.4){
 
 function setVol(v){ masterVol=v; document.getElementById('sVolVal').textContent=Math.round(v*100)+'%'; }
 
+// ── Kaffeebecher-Position ─────────────────────────────────────
+function setWeaponPos(){
+  const x = +document.getElementById('sWpnX').value;
+  const y = +document.getElementById('sWpnY').value;
+  weaponOffX = x;
+  weaponOffY = y;
+  document.getElementById('sWpnXVal').textContent =
+    x===0 ? 'Mitte' : (x>0 ? '+'+x+'% rechts' : Math.abs(x)+'% links');
+  document.getElementById('sWpnYVal').textContent =
+    y===0 ? 'Standard' : (y>0 ? '+'+y+'% hoch' : Math.abs(y)+'% runter');
+  try{ localStorage.setItem('odWpnX', x); localStorage.setItem('odWpnY', y); }catch(e){}
+}
+
+function resetWeaponPos(){
+  weaponOffX=0; weaponOffY=0;
+  document.getElementById('sWpnX').value=0;
+  document.getElementById('sWpnY').value=0;
+  document.getElementById('sWpnXVal').textContent='Mitte';
+  document.getElementById('sWpnYVal').textContent='Standard';
+  try{ localStorage.removeItem('odWpnX'); localStorage.removeItem('odWpnY'); }catch(e){}
+}
+
+function loadWeaponPos(){
+  try{
+    const x=localStorage.getItem('odWpnX');
+    const y=localStorage.getItem('odWpnY');
+    if(x!==null){ weaponOffX=+x; const el=document.getElementById('sWpnX'); if(el) el.value=x; }
+    if(y!==null){ weaponOffY=+y; const el=document.getElementById('sWpnY'); if(el) el.value=y; }
+    if(x!==null||y!==null) setWeaponPos();
+  }catch(e){}
+}
+
 function setUIZoom(pct){
   document.getElementById('sZoomVal').textContent=pct+'%';
   // CSS zoom auf gameArea + Header (zoomt das komplette Spiel raus)
@@ -539,17 +588,10 @@ function setGPSize(pct){
   try{
     const zoom = localStorage.getItem('odUIZoom');
     const gps  = localStorage.getItem('odGPSize');
-    if(zoom){
-      const el=document.getElementById('sZoom');
-      if(el) el.value=zoom;
-      setUIZoom(+zoom);
-    }
-    if(gps){
-      const el=document.getElementById('sGPSize');
-      if(el) el.value=gps;
-      setGPSize(+gps);
-    }
+    if(zoom){ const el=document.getElementById('sZoom'); if(el) el.value=zoom; setUIZoom(+zoom); }
+    if(gps){  const el=document.getElementById('sGPSize'); if(el) el.value=gps; setGPSize(+gps); }
   }catch(e){}
+  loadWeaponPos();
 })();
 function setFov(v){
   FOV = v*(Math.PI/180);
@@ -922,6 +964,9 @@ const MAPS = [
 // ─── Game State ────────────────────────────────────────────────
 let gs='menu', lvlIdx=0, player, enemies, pickups, map, ld, doors;
 let keys={}, lastT=0, raf=null, kills=0, showMM=false, showDebug=false;
+// Kaffeebecher-Position (0–100 %, gespeichert in localStorage)
+let weaponOffX = 0;   // prozentual: -50..+50 → links/rechts
+let weaponOffY = 0;   // prozentual: -50..+50 → hoch/runter
 let wAnimT=0;
 let projectiles=[];
 let particles=[];
@@ -1264,7 +1309,9 @@ function renderHUD(){
 function renderWeapon(){
   const sc=Math.min(DW*0.65,DH*0.88);
   const bW=sc*0.27, bH=sc*0.31;
-  const baseX=DW*0.78, baseY=DH+bH*0.18;
+  // Benutzer-definierte Position (weaponOffX/Y in % von DW/DH)
+  const baseX = DW*(0.78 + weaponOffX/200);
+  const baseY = DH + bH*0.18 - DH*(weaponOffY/100);
   const animProg=wAnimT>0?Math.sin(wAnimT*Math.PI):0;
   const offX=animProg*bW*0.14, offY=-animProg*bH*0.38;
   const rot=animProg*-0.32;
